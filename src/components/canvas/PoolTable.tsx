@@ -11,6 +11,8 @@ import { RigidBody } from "@react-three/rapier";
 import type * as THREE from "three";
 import type { GLTF } from "three-stdlib";
 
+import { PHYSIC_CONSTANTS } from "@/constants/physic";
+
 type GLTFResult = GLTF & {
   nodes: {
     Object_2: THREE.Mesh;
@@ -31,7 +33,12 @@ export default function Model(props: JSX.IntrinsicElements["group"]) {
   return (
     <>
       <Center position-y={-0.51} {...props}>
-        <RigidBody type="fixed" colliders="trimesh">
+        <RigidBody
+          type="fixed"
+          colliders="trimesh"
+          friction={PHYSIC_CONSTANTS.TABLE_FRICTION}
+          restitution={PHYSIC_CONSTANTS.TABLE_RESTITUTION}
+        >
           <group
             rotation={[-Math.PI / 2, 0, -Math.PI / 2]}
             dispose={null}

@@ -1,11 +1,16 @@
-import React from "react";
+import React, { useRef } from "react";
 
 import { Sphere, useTexture } from "@react-three/drei";
 import { RigidBody } from "@react-three/rapier";
+import { Vector3 } from "three";
 
 import getInitialPositions from "@/constants/balls";
+import { PHYSIC_CONSTANTS } from "@/constants/physic";
+import { useStore } from "@/utils/store";
 
 const balls = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15];
+
+const position = new Vector3();
 
 export default function Balls() {
   const ballTextures = useTexture([
@@ -27,14 +32,36 @@ export default function Balls() {
     "/balls/15.jpg",
   ]);
 
+  const ballBody = useRef(null);
+
   const positions = getInitialPositions();
+
+  const setCameraCenter = useStore((state) => state.setCameraCenter);
 
   return (
     <>
-      {balls.map((pos, index) => (
-        <RigidBody key={index} colliders="ball">
-          <Sphere args={[0.026, 16, 16]} position={positions[index]}>
-            <meshBasicMaterial map={ballTextures[index]} />
+      {balls.map((pos) => (
+        <RigidBody
+          key={pos}
+          colliders="ball"
+          friction={PHYSIC_CONSTANTS.BALL_FRICTION}
+          restitution={PHYSIC_CONSTANTS.BALL_RESTITUTION}
+          angularDamping={1}
+        >
+          <Sphere
+            args={[0.026, 16, 16]}
+            position={positions[pos]}
+            rotation={[
+              Math.PI * Math.random() * 2,
+              Math.PI * Math.random() * 2,
+              Math.PI * Math.random() * 2,
+            ]}
+            onClick={(e) => {
+              e.object.getWorldPosition(position);
+              setCameraCenter(position);
+            }}
+          >
+            <meshBasicMaterial map={ballTextures[pos]} />
           </Sphere>
         </RigidBody>
       ))}
