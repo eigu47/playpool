@@ -1,16 +1,14 @@
 import React from "react";
 
 import { Canvas } from "@react-three/fiber";
-import { Debug, Physics } from "@react-three/rapier";
-import { useControls } from "leva";
+import { Physics } from "@react-three/rapier";
 
 import Balls from "@/components/canvas/Balls";
 import Camera from "@/components/canvas/Camera";
+import Debugs from "@/components/canvas/Debugs";
 import PoolTable from "@/components/canvas/PoolTable";
 
 export default function CanvasTSX() {
-  const { debugOn } = useControls("Debug", { debugOn: false });
-
   return (
     <>
       <Canvas camera={{ position: [0, 0, 5] }}>
@@ -21,9 +19,9 @@ export default function CanvasTSX() {
         <Camera />
 
         <Physics>
-          {debugOn && <Debug />}
           <PoolTable />
           <Balls />
+          <Debugs />
         </Physics>
       </Canvas>
     </>

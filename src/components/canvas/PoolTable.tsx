@@ -32,7 +32,7 @@ export default function Model(props: JSX.IntrinsicElements["group"]) {
 
   return (
     <>
-      <Center position-y={-0.51} {...props}>
+      <Center position-y={-0.5} {...props}>
         <RigidBody
           type="fixed"
           colliders="trimesh"

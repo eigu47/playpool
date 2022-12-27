@@ -1,14 +1,14 @@
 import React, { useRef } from "react";
 
-import { Sphere, useTexture } from "@react-three/drei";
-import { RigidBody } from "@react-three/rapier";
+import { useTexture } from "@react-three/drei";
+import { RigidBody, type RigidBodyApi } from "@react-three/rapier";
 import { Vector3 } from "three";
 
 import getInitialPositions from "@/constants/balls";
 import { PHYSIC_CONSTANTS } from "@/constants/physic";
-import { useStore } from "@/utils/store";
+import { useCamera } from "@/utils/store";
 
-const balls = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15];
+const balls = Array(16);
 
 const position = new Vector3();
 
@@ -31,38 +31,49 @@ export default function Balls() {
     "/balls/14.jpg",
     "/balls/15.jpg",
   ]);
+  const setShotMode = useCamera((state) => state.setShotMode);
 
-  const ballBody = useRef(null);
+  const setCameraCenter = useCamera((state) => state.setCameraCenter);
+
+  const ballBodies = useRef<RigidBodyApi[] | null[]>([]);
 
   const positions = getInitialPositions();
 
-  const setCameraCenter = useStore((state) => state.setCameraCenter);
-
   return (
     <>
-      {balls.map((pos) => (
+      {balls.map((ball, index) => (
         <RigidBody
-          key={pos}
+          ref={(ref) => {
+            ballBodies.current[index] = ref;
+          }}
+          key={index}
           colliders="ball"
           friction={PHYSIC_CONSTANTS.BALL_FRICTION}
           restitution={PHYSIC_CONSTANTS.BALL_RESTITUTION}
-          angularDamping={1}
+          angularDamping={PHYSIC_CONSTANTS.DAMPING}
+          position={positions[index]}
+          rotation={[
+            Math.PI * Math.random() * 2,
+            Math.PI * Math.random() * 2,
+            Math.PI * Math.random() * 2,
+          ]}
         >
-          <Sphere
-            args={[0.026, 16, 16]}
-            position={positions[pos]}
-            rotation={[
-              Math.PI * Math.random() * 2,
-              Math.PI * Math.random() * 2,
-              Math.PI * Math.random() * 2,
-            ]}
-            onClick={(e) => {
-              e.object.getWorldPosition(position);
+          <mesh
+            onClick={({ object }) => {
+              object.getWorldPosition(position);
+
               setCameraCenter(position);
+
+              if (index === 0) {
+                setShotMode(true);
+              } else {
+                setShotMode(false);
+              }
             }}
           >
-            <meshBasicMaterial map={ballTextures[pos]} />
-          </Sphere>
+            <sphereGeometry args={[0.026, 16, 16]} />
+            <meshStandardMaterial map={ballTextures[index]} />
+          </mesh>
         </RigidBody>
       ))}
     </>
