@@ -1,16 +1,21 @@
 import React, { useRef } from "react";
 
-import { useTexture } from "@react-three/drei";
+import { Sphere, useTexture } from "@react-three/drei";
 import { RigidBody, type RigidBodyApi } from "@react-three/rapier";
-import { Vector3 } from "three";
+import { useDrag } from "@use-gesture/react";
+import { SphereGeometry, Vector3 } from "three";
 
 import getInitialPositions from "@/constants/balls";
 import { PHYSIC_CONSTANTS } from "@/constants/physic";
 import { useCamera } from "@/utils/store";
 
-const balls = Array(16);
+const ballGeometry = new SphereGeometry(0.026, 16, 16);
 
-const position = new Vector3();
+const balls = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15];
+
+const cameraCenter = new Vector3();
+const cameraPosition = new Vector3();
+const ballNormal = new Vector3();
 
 export default function Balls() {
   const ballTextures = useTexture([
@@ -31,13 +36,19 @@ export default function Balls() {
     "/balls/14.jpg",
     "/balls/15.jpg",
   ]);
-  const setShotMode = useCamera((state) => state.setShotMode);
-
+  const setGameMode = useCamera((state) => state.setGameMode);
   const setCameraCenter = useCamera((state) => state.setCameraCenter);
 
   const ballBodies = useRef<RigidBodyApi[] | null[]>([]);
-
   const positions = getInitialPositions();
+
+  const bind = useDrag(({ last, movement }) => {
+    if (useCamera.getState().gameMode === "shot" && last && movement[1] > 0) {
+      // console.log((movement[1] / window.innerHeight) * 2);
+      // ballNormal.subVectors(cameraCenter, cameraPosition).normalize;
+      // console.log(ballNormal);
+    }
+  });
 
   return (
     <>
@@ -59,19 +70,21 @@ export default function Balls() {
           ]}
         >
           <mesh
+            geometry={ballGeometry}
+            //
+            {...(index === 0 && { ...(bind() as any) })}
+            //
             onClick={({ object }) => {
-              object.getWorldPosition(position);
-
-              setCameraCenter(position);
+              object.getWorldPosition(cameraCenter);
+              setCameraCenter(cameraCenter);
 
               if (index === 0) {
-                setShotMode(true);
+                setGameMode("shot");
               } else {
-                setShotMode(false);
+                setGameMode("idle");
               }
             }}
           >
-            <sphereGeometry args={[0.026, 16, 16]} />
             <meshStandardMaterial map={ballTextures[index]} />
           </mesh>
         </RigidBody>

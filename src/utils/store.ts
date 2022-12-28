@@ -1,17 +1,19 @@
 import { type Vector3 } from "three";
 import create from "zustand";
 
+type GameModes = "idle" | "shot" | "pause";
+
 type StoreType = {
   cameraCenter: null | Vector3;
-  shotMode: boolean;
+  gameMode: GameModes;
   setCameraCenter: (center: null | Vector3) => void;
-  setShotMode: (center: boolean) => void;
+  setGameMode: (mode: GameModes) => void;
 };
 
 export const useCamera = create<StoreType>((set) => ({
   cameraCenter: null,
-  shotMode: false,
+  gameMode: "idle",
 
   setCameraCenter: (center) => set({ cameraCenter: center }),
-  setShotMode: (mode) => set({ shotMode: mode }),
+  setGameMode: (mode) => set({ gameMode: mode }),
 }));

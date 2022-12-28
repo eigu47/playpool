@@ -55,7 +55,8 @@ export default function Model(props: JSX.IntrinsicElements["group"]) {
         rotation={[-Math.PI / 2, 0, -Math.PI / 2]}
         dispose={null}
         scale={1.11}
-        geometry={nodes.Object_2003.geometry}
+        position-y={-1}
+        geometry={nodes.Object_2001.geometry}
         material={materials.None}
       /> */}
     </>
