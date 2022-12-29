@@ -1,31 +1,62 @@
 import React, { useRef } from "react";
 
-import { OrbitControls } from "@react-three/drei";
+import { OrbitControls, QuadraticBezierLine } from "@react-three/drei";
+import { type Line2Props } from "@react-three/drei/core/QuadraticBezierLine";
 import { useFrame } from "@react-three/fiber";
 import { useControls } from "leva";
-import { Vector3, type Mesh } from "three";
-import type { Line2, OrbitControls as OrbitControlsImpl } from "three-stdlib";
+import { Vector3 } from "three";
+import type { OrbitControls as OrbitControlsImpl } from "three-stdlib";
 
-import { useCamera } from "@/utils/store";
+import { useGameStore, type GameModes } from "@/utils/store";
 
+const cameraCenter = new Vector3();
 const lineVector = new Vector3();
+
+const cameraProps: Partial<Record<GameModes, Partial<OrbitControlsImpl>>> = {
+  shot: {
+    rotateSpeed: 0.2,
+    maxDistance: 0.75,
+    minPolarAngle: Math.PI / 2.4,
+  },
+  moving: {
+    minDistance: 1.5,
+  },
+} as const;
 
 export default function Camera() {
   const { debugOn } = useControls("Debug", { debugOn: false });
   const cameraRef = useRef<OrbitControlsImpl>(null);
-  const lineRef = useRef(null);
+  const lineRef = useRef<Line2Props>(null);
 
-  const cameraCenter = useCamera((state) => state.cameraCenter);
-  const gameMode = useCamera((state) => state.gameMode);
+  const getSelectedBall = useGameStore((state) => state.getSelectedBall);
+  const gameMode = useGameStore((state) => state.gameMode);
+  const setShotNormal = useGameStore((state) => state.setShotNormal);
+  const _selected = useGameStore((state) => state.selectedBall);
+
+  const selectedBall = getSelectedBall();
 
   useFrame(({ camera }, delta) => {
-    cameraCenter && cameraRef.current?.target.lerp(cameraCenter, delta * 4);
+    if (!selectedBall) return null;
 
-    if (gameMode === "shot" && cameraCenter) {
+    selectedBall.mesh?.getWorldPosition(cameraCenter);
+    cameraRef.current?.target.lerp(cameraCenter, delta * 4);
+
+    if (gameMode === "shot") {
       lineVector
         .subVectors(cameraCenter, camera.position)
-        .setY(cameraCenter.y)
-        .normalize();
+        .normalize()
+        .setY(cameraCenter.y);
+
+      setShotNormal(lineVector);
+
+      lineRef.current?.setPoints(
+        cameraCenter,
+        cameraCenter
+          .clone()
+          .add(lineVector.clone().multiplyScalar(2))
+          .setY(cameraCenter.y),
+        cameraCenter
+      );
     }
   });
 
@@ -34,13 +65,15 @@ export default function Camera() {
       <OrbitControls
         ref={cameraRef}
         makeDefault
-        rotateSpeed={gameMode === "shot" ? 0.2 : 0.5}
-        maxDistance={gameMode === "shot" ? 0.75 : 1.5}
-        minDistance={0.5}
+        rotateSpeed={cameraProps[gameMode]?.rotateSpeed ?? 0.5}
+        maxDistance={cameraProps[gameMode]?.maxDistance ?? 1.5}
+        minDistance={cameraProps[gameMode]?.minDistance ?? 0.5}
         maxPolarAngle={debugOn ? Math.PI : Math.PI / 2.4}
-        minPolarAngle={gameMode === "shot" ? Math.PI / 2.4 : 0}
+        minPolarAngle={cameraProps[gameMode]?.minPolarAngle ?? 0}
         target={[0, 0, 0]}
       />
+
+      <QuadraticBezierLine ref={lineRef} start={[0, 0, 0]} end={[0, 0, 0]} />
     </>
   );
 }

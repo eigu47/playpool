@@ -1,21 +1,32 @@
 import React, { useRef } from "react";
 
-import { Sphere, useTexture } from "@react-three/drei";
+import { useTexture } from "@react-three/drei";
 import { RigidBody, type RigidBodyApi } from "@react-three/rapier";
 import { useDrag } from "@use-gesture/react";
-import { SphereGeometry, Vector3 } from "three";
+import {
+  type Mesh,
+  SphereGeometry,
+  Vector3,
+  type BufferGeometry,
+  type Material,
+} from "three";
 
 import getInitialPositions from "@/constants/balls";
 import { PHYSIC_CONSTANTS } from "@/constants/physic";
-import { useCamera } from "@/utils/store";
+import { useGameStore } from "@/utils/store";
+
+export interface BallBody extends RigidBodyApi {
+  isAwake: boolean;
+  isOnPlay: boolean;
+}
+
+export type BallMesh = Mesh<BufferGeometry, Material | Material[]> | null;
 
 const ballGeometry = new SphereGeometry(0.026, 16, 16);
 
 const balls = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15];
 
-const cameraCenter = new Vector3();
-const cameraPosition = new Vector3();
-const ballNormal = new Vector3();
+const forceVector = new Vector3();
 
 export default function Balls() {
   const ballTextures = useTexture([
@@ -36,17 +47,29 @@ export default function Balls() {
     "/balls/14.jpg",
     "/balls/15.jpg",
   ]);
-  const setGameMode = useCamera((state) => state.setGameMode);
-  const setCameraCenter = useCamera((state) => state.setCameraCenter);
+  const setGameMode = useGameStore((state) => state.setGameMode);
+  const setSelectedBall = useGameStore((state) => state.setSelectedBall);
+  const addBallBody = useGameStore((state) => state.addBallBody);
+  const addBallMesh = useGameStore((state) => state.addBallMesh);
 
-  const ballBodies = useRef<RigidBodyApi[] | null[]>([]);
+  const ballBodies = useRef<BallBody[]>([]);
+  const ballMeshes = useRef<BallMesh[]>([]);
   const positions = getInitialPositions();
 
   const bind = useDrag(({ last, movement }) => {
-    if (useCamera.getState().gameMode === "shot" && last && movement[1] > 0) {
-      // console.log((movement[1] / window.innerHeight) * 2);
-      // ballNormal.subVectors(cameraCenter, cameraPosition).normalize;
-      // console.log(ballNormal);
+    if (
+      useGameStore.getState().gameMode === "shot" &&
+      last &&
+      movement[1] > 0
+    ) {
+      const force = Math.min(movement[1] / window.innerHeight, 0.5) / 1500;
+
+      forceVector
+        .copy(useGameStore.getState().shotNormal ?? new Vector3())
+        .multiplyScalar(force)
+        .setY(0);
+
+      ballBodies.current[0]?.applyImpulse(forceVector);
     }
   });
 
@@ -55,8 +78,15 @@ export default function Balls() {
       {balls.map((ball, index) => (
         <RigidBody
           ref={(ref) => {
-            ballBodies.current[index] = ref;
+            ballBodies.current[index] = {
+              ...(ref as any),
+              isAwake: false,
+              isOnPlay: true,
+            };
+
+            addBallBody(ballBodies.current[index], index);
           }}
+          name={index.toString()}
           key={index}
           colliders="ball"
           friction={PHYSIC_CONSTANTS.BALL_FRICTION}
@@ -68,20 +98,53 @@ export default function Balls() {
             Math.PI * Math.random() * 2,
             Math.PI * Math.random() * 2,
           ]}
+          onSleep={() => {
+            ballBodies.current[index].isAwake = false;
+
+            if (
+              ballBodies.current
+                .flatMap((body) => body?.isAwake)
+                .every((isAwake) => isAwake === false)
+            ) {
+              setGameMode("idle");
+
+              if (useGameStore.getState().selectedBall === 0) {
+                setGameMode("shot");
+              }
+            }
+          }}
+          onWake={() => {
+            if (ballBodies.current[index].isOnPlay === false) return;
+
+            ballBodies.current[index].isAwake = true;
+            setGameMode("moving");
+          }}
+          onIntersectionEnter={({ target }) => {
+            if (target.rigidBodyObject?.name) {
+              const ball = ballBodies.current[+target.rigidBodyObject.name];
+
+              ball.isOnPlay = false;
+              ball.isAwake = false;
+            }
+          }}
         >
           <mesh
+            ref={(ref) => {
+              ballMeshes.current[index] = ref;
+
+              addBallMesh(ref, index);
+            }}
+            name={index.toString()}
             geometry={ballGeometry}
-            //
             {...(index === 0 && { ...(bind() as any) })}
-            //
-            onClick={({ object }) => {
-              object.getWorldPosition(cameraCenter);
-              setCameraCenter(cameraCenter);
+            onClick={() => {
+              setSelectedBall(index);
 
               if (index === 0) {
                 setGameMode("shot");
               } else {
-                setGameMode("idle");
+                useGameStore.getState().gameMode === "shot" &&
+                  setGameMode("idle");
               }
             }}
           >

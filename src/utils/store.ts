@@ -1,19 +1,91 @@
-import { type Vector3 } from "three";
+import type { Vector3 } from "three";
 import create from "zustand";
 
-type GameModes = "idle" | "shot" | "pause";
+import type { BallBody, BallMesh } from "@/components/canvas/Balls";
+import getInitialPositions from "@/constants/balls";
 
-type StoreType = {
-  cameraCenter: null | Vector3;
+export type GameModes = "idle" | "shot" | "moving";
+
+type GameStore = {
+  selectedBall: number | null;
+  ballsState: {
+    mesh: BallMesh;
+    body: BallBody;
+  }[];
+  shotNormal: Vector3 | null;
   gameMode: GameModes;
-  setCameraCenter: (center: null | Vector3) => void;
+  setSelectedBall: (ball: number) => void;
+  getSelectedBall: () => { mesh: BallMesh; body: BallBody } | null;
+  addBallMesh: (mesh: BallMesh, index: number) => void;
+  addBallBody: (body: BallBody, index: number) => void;
+  setShotNormal: (normal: Vector3 | null) => void;
   setGameMode: (mode: GameModes) => void;
+  resetPositions: () => void;
 };
 
-export const useCamera = create<StoreType>((set) => ({
-  cameraCenter: null,
+export const useGameStore = create<GameStore>((set, get) => ({
+  selectedBall: null,
+  shotNormal: null,
   gameMode: "idle",
+  ballsState: [],
 
-  setCameraCenter: (center) => set({ cameraCenter: center }),
-  setGameMode: (mode) => set({ gameMode: mode }),
+  setSelectedBall: (ball) => set({ selectedBall: ball }),
+  getSelectedBall: () => {
+    if (get().selectedBall === null) return null;
+
+    return get().ballsState[get().selectedBall!];
+  },
+  addBallMesh(mesh, index) {
+    set((state) => {
+      const ballsState = state.ballsState;
+
+      ballsState[index] = {
+        ...ballsState[index],
+        mesh,
+      };
+
+      return {
+        ballsState,
+      };
+    });
+  },
+  addBallBody(body, index) {
+    set((state) => {
+      const ballsState = state.ballsState;
+
+      ballsState[index] = {
+        ...ballsState[index],
+        body,
+      };
+
+      return {
+        ballsState,
+      };
+    });
+  },
+  setShotNormal: (normal) => set({ shotNormal: normal }),
+  setGameMode: (mode) => {
+    if (mode === "shot") {
+      get().gameMode === "idle" && set({ gameMode: "shot" });
+    } else {
+      set({ gameMode: mode });
+    }
+  },
+  resetPositions: () => {
+    const positions = getInitialPositions();
+
+    get()
+      .ballsState.flatMap((ball) => ball.body)
+      .forEach((body, index) => {
+        body.setLinvel({ x: 0, y: 0, z: 0 });
+        body.setAngvel({ x: 0, y: 0, z: 0 });
+        body.setTranslation({
+          x: positions[index][0],
+          y: positions[index][1],
+          z: positions[index][2],
+        });
+
+        body.isOnPlay = true;
+      });
+  },
 }));
