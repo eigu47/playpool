@@ -1,7 +1,6 @@
 import React, { useRef } from "react";
 
 import { OrbitControls, QuadraticBezierLine } from "@react-three/drei";
-import { type Line2Props } from "@react-three/drei/core/QuadraticBezierLine";
 import { useFrame } from "@react-three/fiber";
 import { useControls } from "leva";
 import { Vector3 } from "three";
@@ -26,7 +25,7 @@ const cameraProps: Partial<Record<GameModes, Partial<OrbitControlsImpl>>> = {
 export default function Camera() {
   const { debugOn } = useControls("Debug", { debugOn: false });
   const cameraRef = useRef<OrbitControlsImpl>(null);
-  const lineRef = useRef<Line2Props>(null);
+  const lineRef = useRef<any>(null);
 
   const getSelectedBall = useGameStore((state) => state.getSelectedBall);
   const gameMode = useGameStore((state) => state.gameMode);
