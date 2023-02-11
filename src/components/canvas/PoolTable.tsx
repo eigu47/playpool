@@ -59,7 +59,7 @@ export default function Model(props: JSX.IntrinsicElements["group"]) {
         geometry={nodes.Object_2001.geometry}
         material={materials.None}
       /> */}
-      <CuboidCollider args={[0.75, 0.1, 1.2]} position={[0, -0.15, 0]} sensor />
+      <CuboidCollider args={[2, 0.1, 3.5]} position={[0, -0.15, 0]} sensor />
     </>
   );
 }

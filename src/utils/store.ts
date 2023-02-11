@@ -2,7 +2,7 @@ import type { Vector3 } from "three";
 import create from "zustand";
 
 import type { BallBody, BallMesh } from "@/components/canvas/Balls";
-import getInitialPositions from "@/constants/balls";
+import { getInitialPositions } from "@/constants/balls";
 
 export type GameModes = "idle" | "shot" | "moving";
 

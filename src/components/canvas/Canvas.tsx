@@ -1,6 +1,6 @@
 import React from "react";
 
-import { Loader, Plane } from "@react-three/drei";
+import { Loader } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
 import { Physics } from "@react-three/rapier";
 

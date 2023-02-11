@@ -29,7 +29,7 @@ export function shuffleArray<T>(indexes: T[]): T[] {
   return indexes;
 }
 
-export default function getInitialPositions() {
+export function getInitialPositions() {
   const shuffled = shuffleArray(RANDOM_POS);
 
   return [
@@ -39,3 +39,73 @@ export default function getInitialPositions() {
     ...shuffled.slice(7),
   ] as [number, number, number][];
 }
+
+export const BALLS: {
+  id: number;
+  type: "white" | "black" | "solid" | "stripe";
+}[] = [
+  {
+    id: 0,
+    type: "white",
+  },
+  {
+    id: 1,
+    type: "solid",
+  },
+  {
+    id: 2,
+    type: "solid",
+  },
+  {
+    id: 3,
+    type: "solid",
+  },
+  {
+    id: 4,
+    type: "solid",
+  },
+  {
+    id: 5,
+    type: "solid",
+  },
+  {
+    id: 6,
+    type: "solid",
+  },
+  {
+    id: 7,
+    type: "solid",
+  },
+  {
+    id: 8,
+    type: "black",
+  },
+  {
+    id: 9,
+    type: "stripe",
+  },
+  {
+    id: 10,
+    type: "stripe",
+  },
+  {
+    id: 11,
+    type: "stripe",
+  },
+  {
+    id: 12,
+    type: "stripe",
+  },
+  {
+    id: 13,
+    type: "stripe",
+  },
+  {
+    id: 14,
+    type: "stripe",
+  },
+  {
+    id: 15,
+    type: "stripe",
+  },
+];

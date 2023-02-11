@@ -11,7 +11,7 @@ import {
   type Material,
 } from "three";
 
-import getInitialPositions from "@/constants/balls";
+import { getInitialPositions, BALLS } from "@/constants/balls";
 import { PHYSIC_CONSTANTS } from "@/constants/physic";
 import { useGameStore } from "@/utils/store";
 
@@ -23,8 +23,6 @@ export interface BallBody extends RigidBodyApi {
 export type BallMesh = Mesh<BufferGeometry, Material | Material[]> | null;
 
 const ballGeometry = new SphereGeometry(0.026, 16, 16);
-
-const balls = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15];
 
 const forceVector = new Vector3();
 
@@ -75,35 +73,35 @@ export default function Balls() {
 
   return (
     <>
-      {balls.map((ball, index) => (
+      {BALLS.map(({ id: ballId, type }) => (
         <RigidBody
           ref={(ref) => {
-            ballBodies.current[index] = {
+            ballBodies.current[ballId] = {
               ...(ref as any),
               isAwake: false,
               isOnPlay: true,
             };
 
-            addBallBody(ballBodies.current[index], index);
+            addBallBody(ballBodies.current[ballId], ballId);
           }}
-          name={index.toString()}
-          key={index}
+          name={ballId.toString()}
+          key={ballId}
           colliders="ball"
           friction={PHYSIC_CONSTANTS.BALL_FRICTION}
           restitution={PHYSIC_CONSTANTS.BALL_RESTITUTION}
           angularDamping={PHYSIC_CONSTANTS.DAMPING}
-          position={positions[index]}
+          position={positions[ballId]}
           rotation={[
             Math.PI * Math.random() * 2,
             Math.PI * Math.random() * 2,
             Math.PI * Math.random() * 2,
           ]}
           onSleep={() => {
-            ballBodies.current[index].isAwake = false;
+            ballBodies.current[ballId].isAwake = false;
 
             if (
               ballBodies.current
-                .flatMap((body) => body?.isAwake)
+                .flatMap((body) => body.isAwake)
                 .every((isAwake) => isAwake === false)
             ) {
               setGameMode("idle");
@@ -114,9 +112,9 @@ export default function Balls() {
             }
           }}
           onWake={() => {
-            if (ballBodies.current[index].isOnPlay === false) return;
+            if (ballBodies.current[ballId].isOnPlay === false) return;
 
-            ballBodies.current[index].isAwake = true;
+            ballBodies.current[ballId].isAwake = true;
             setGameMode("moving");
           }}
           onIntersectionEnter={({ target }) => {
@@ -130,17 +128,17 @@ export default function Balls() {
         >
           <mesh
             ref={(ref) => {
-              ballMeshes.current[index] = ref;
+              ballMeshes.current[ballId] = ref;
 
-              addBallMesh(ref, index);
+              addBallMesh(ref, ballId);
             }}
-            name={index.toString()}
+            name={ballId.toString()}
             geometry={ballGeometry}
-            {...(index === 0 && { ...(bind() as any) })}
+            {...(ballId === 0 && { ...(bind() as any) })}
             onClick={() => {
-              setSelectedBall(index);
+              setSelectedBall(ballId);
 
-              if (index === 0) {
+              if (ballId === 0) {
                 setGameMode("shot");
               } else {
                 useGameStore.getState().gameMode === "shot" &&
@@ -148,7 +146,7 @@ export default function Balls() {
               }
             }}
           >
-            <meshStandardMaterial map={ballTextures[index]} />
+            <meshStandardMaterial map={ballTextures[ballId]} />
           </mesh>
         </RigidBody>
       ))}
