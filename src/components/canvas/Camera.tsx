@@ -27,12 +27,9 @@ export default function Camera() {
   const cameraRef = useRef<OrbitControlsImpl>(null);
   const lineRef = useRef<any>(null);
 
-  const getSelectedBall = useGameStore((state) => state.getSelectedBall);
   const gameMode = useGameStore((state) => state.gameMode);
   const setShotNormal = useGameStore((state) => state.setShotNormal);
-  const _selected = useGameStore((state) => state.selectedBall);
-
-  const selectedBall = getSelectedBall();
+  const selectedBall = useGameStore((state) => state.selectedBall);
 
   useFrame(({ camera }, delta) => {
     if (!selectedBall) return null;

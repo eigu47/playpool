@@ -84,7 +84,7 @@ export default function Balls() {
 
             addBallBody(ballBodies.current[ballId], ballId);
           }}
-          name={ballId.toString()}
+          name={`ball${ballId}`}
           key={ballId}
           colliders="ball"
           friction={PHYSIC_CONSTANTS.BALL_FRICTION}
@@ -105,10 +105,7 @@ export default function Balls() {
                 .every((isAwake) => isAwake === false)
             ) {
               setGameMode("idle");
-
-              if (useGameStore.getState().selectedBall === 0) {
-                setGameMode("shot");
-              }
+              setGameMode("shot");
             }
           }}
           onWake={() => {
@@ -118,12 +115,12 @@ export default function Balls() {
             setGameMode("moving");
           }}
           onIntersectionEnter={({ target }) => {
-            if (target.rigidBodyObject?.name) {
-              const ball = ballBodies.current[+target.rigidBodyObject.name];
+            const ball = ballBodies.current[ballId];
 
-              ball.isOnPlay = false;
-              ball.isAwake = false;
-            }
+            ball.isOnPlay = false;
+            ball.isAwake = false;
+
+            console.log(target);
           }}
         >
           <mesh
@@ -132,7 +129,7 @@ export default function Balls() {
 
               addBallMesh(ref, ballId);
             }}
-            name={ballId.toString()}
+            name={`ball${ballId}`}
             geometry={ballGeometry}
             {...(ballId === 0 && { ...(bind() as any) })}
             onClick={() => {
@@ -140,10 +137,10 @@ export default function Balls() {
 
               if (ballId === 0) {
                 setGameMode("shot");
-              } else {
-                useGameStore.getState().gameMode === "shot" &&
-                  setGameMode("idle");
+                return;
               }
+
+              setGameMode("idle");
             }}
           >
             <meshStandardMaterial map={ballTextures[ballId]} />

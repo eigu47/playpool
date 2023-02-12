@@ -4,18 +4,19 @@ import create from "zustand";
 import type { BallBody, BallMesh } from "@/components/canvas/Balls";
 import { getInitialPositions } from "@/constants/balls";
 
+type BallState = {
+  id: number;
+  mesh: BallMesh;
+  body: BallBody;
+};
 export type GameModes = "idle" | "shot" | "moving";
 
 type GameStore = {
-  selectedBall: number | null;
-  ballsState: {
-    mesh: BallMesh;
-    body: BallBody;
-  }[];
+  selectedBall: BallState | null;
+  ballsState: BallState[];
   shotNormal: Vector3 | null;
   gameMode: GameModes;
   setSelectedBall: (ball: number) => void;
-  getSelectedBall: () => { mesh: BallMesh; body: BallBody } | null;
   addBallMesh: (mesh: BallMesh, index: number) => void;
   addBallBody: (body: BallBody, index: number) => void;
   setShotNormal: (normal: Vector3 | null) => void;
@@ -29,18 +30,14 @@ export const useGameStore = create<GameStore>((set, get) => ({
   gameMode: "idle",
   ballsState: [],
 
-  setSelectedBall: (ball) => set({ selectedBall: ball }),
-  getSelectedBall: () => {
-    if (get().selectedBall === null) return null;
-
-    return get().ballsState[get().selectedBall!];
-  },
+  setSelectedBall: (ball) => set({ selectedBall: get().ballsState[ball] }),
   addBallMesh(mesh, index) {
     set((state) => {
       const ballsState = state.ballsState;
 
       ballsState[index] = {
         ...ballsState[index],
+        id: index,
         mesh,
       };
 
@@ -55,6 +52,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
 
       ballsState[index] = {
         ...ballsState[index],
+        id: index,
         body,
       };
 
@@ -66,10 +64,12 @@ export const useGameStore = create<GameStore>((set, get) => ({
   setShotNormal: (normal) => set({ shotNormal: normal }),
   setGameMode: (mode) => {
     if (mode === "shot") {
-      get().gameMode === "idle" && set({ gameMode: "shot" });
-    } else {
-      set({ gameMode: mode });
+      if (get().gameMode === "idle" && get().selectedBall?.id === 0)
+        set({ gameMode: "shot" });
+      return;
     }
+
+    set({ gameMode: mode });
   },
   resetPositions: () => {
     const positions = getInitialPositions();
