@@ -9,10 +9,10 @@ const Home: NextPage = () => {
       <button
         className=""
         onClick={() => {
-          router.push("/multiplayer");
+          router.push("/");
         }}
       >
-        MULTIPLAYER
+        BACK
       </button>
     </div>
   );

@@ -120,7 +120,7 @@ export default function Balls() {
             ball.isOnPlay = false;
             ball.isAwake = false;
 
-            console.log(target);
+            // console.log(target);
           }}
         >
           <mesh

@@ -1,7 +1,13 @@
 import { type AppType } from "next/dist/shared/lib/utils";
+import dynamic from "next/dynamic";
 import Head from "next/head";
 
 import "../styles/globals.css";
+import GUI from "@/components/dom/GUI";
+
+const Scene = dynamic(() => import("@/components/canvas/Scene"), {
+  ssr: true,
+});
 
 const MyApp: AppType = ({ Component, pageProps }) => {
   return (
@@ -12,6 +18,9 @@ const MyApp: AppType = ({ Component, pageProps }) => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <Component {...pageProps} />
+
+      <Scene />
+      <GUI />
     </>
   );
 };
