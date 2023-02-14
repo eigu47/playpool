@@ -2,7 +2,7 @@ import type { Vector3 } from "three";
 import create from "zustand";
 
 import type { BallBody, BallMesh } from "@/components/canvas/Balls";
-import { getInitialPositions } from "@/constants/balls";
+import { getInitialPositions } from "@/constants/BALLS";
 
 type BallState = {
   id: number;
@@ -21,7 +21,7 @@ type GameStore = {
   addBallBody: (body: BallBody, index: number) => void;
   setShotNormal: (normal: Vector3 | null) => void;
   setGameMode: (mode: GameModes) => void;
-  resetPositions: () => void;
+  resetPositions: (positions?: Vector3[]) => void;
 };
 
 export const useGameStore = create<GameStore>((set, get) => ({
@@ -71,19 +71,13 @@ export const useGameStore = create<GameStore>((set, get) => ({
 
     set({ gameMode: mode });
   },
-  resetPositions: () => {
-    const positions = getInitialPositions();
-
+  resetPositions: (positions = getInitialPositions()) => {
     get()
       .ballsState.flatMap((ball) => ball.body)
       .forEach((body, index) => {
         body.setLinvel({ x: 0, y: 0, z: 0 });
         body.setAngvel({ x: 0, y: 0, z: 0 });
-        body.setTranslation({
-          x: positions[index][0],
-          y: positions[index][1],
-          z: positions[index][2],
-        });
+        body.setTranslation(positions[index]);
 
         body.isOnPlay = true;
       });

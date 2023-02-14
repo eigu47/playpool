@@ -11,8 +11,8 @@ import {
   type Material,
 } from "three";
 
-import { getInitialPositions, BALLS } from "@/constants/balls";
-import { PHYSIC_CONSTANTS } from "@/constants/physic";
+import { getInitialPositions, BALLS } from "@/constants/BALLS";
+import { PHYSIC_CONSTANTS } from "@/constants/PHYSICS";
 import { useGameStore } from "@/utils/store";
 
 export interface BallBody extends RigidBodyApi {
@@ -23,7 +23,6 @@ export interface BallBody extends RigidBodyApi {
 export type BallMesh = Mesh<BufferGeometry, Material | Material[]> | null;
 
 const ballGeometry = new SphereGeometry(0.026, 16, 16);
-
 const forceVector = new Vector3();
 
 export default function Balls() {
@@ -119,8 +118,6 @@ export default function Balls() {
 
             ball.isOnPlay = false;
             ball.isAwake = false;
-
-            // console.log(target);
           }}
         >
           <mesh
@@ -141,6 +138,14 @@ export default function Balls() {
               }
 
               setGameMode("idle");
+            }}
+            onPointerEnter={() => {
+              if (ballId !== 0) return;
+              document.body.style.cursor = "pointer";
+            }}
+            onPointerLeave={() => {
+              if (ballId !== 0) return;
+              document.body.style.cursor = "default";
             }}
           >
             <meshStandardMaterial map={ballTextures[ballId]} />

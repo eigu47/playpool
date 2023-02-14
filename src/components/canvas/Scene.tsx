@@ -9,7 +9,11 @@ import Camera from "@/components/canvas/Camera";
 import Debugs from "@/components/canvas/Debugs";
 import PoolTable from "@/components/canvas/PoolTable";
 
-export default function Scene() {
+type Props = {
+  children?: React.ReactNode;
+};
+
+export default function Scene({ children }: Props) {
   return (
     <>
       <Canvas
@@ -26,6 +30,7 @@ export default function Scene() {
           <PoolTable />
           <Balls />
           <Debugs />
+          {children}
         </Physics>
         <Preload all />
       </Canvas>

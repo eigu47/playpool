@@ -11,7 +11,7 @@ import { CuboidCollider, RigidBody } from "@react-three/rapier";
 import type * as THREE from "three";
 import type { GLTF } from "three-stdlib";
 
-import { PHYSIC_CONSTANTS } from "@/constants/physic";
+import { PHYSIC_CONSTANTS } from "@/constants/PHYSICS";
 
 type GLTFResult = GLTF & {
   nodes: {
