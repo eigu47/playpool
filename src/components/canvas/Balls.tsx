@@ -1,7 +1,11 @@
 import React, { useRef } from "react";
 
 import { useTexture } from "@react-three/drei";
-import { RigidBody, type RigidBodyApi } from "@react-three/rapier";
+import {
+  CuboidCollider,
+  RigidBody,
+  type RigidBodyApi,
+} from "@react-three/rapier";
 import { useDrag } from "@use-gesture/react";
 import {
   type Mesh,
@@ -75,15 +79,17 @@ export default function Balls() {
       {BALLS.map(({ id: ballId, type }) => (
         <RigidBody
           ref={(ref) => {
+            if (ref === null) return;
+
             ballBodies.current[ballId] = {
-              ...(ref as any),
+              ...ref,
               isAwake: false,
               isOnPlay: true,
             };
 
             addBallBody(ballBodies.current[ballId], ballId);
           }}
-          name={`ball${ballId}`}
+          name={ballId.toString()}
           key={ballId}
           colliders="ball"
           friction={PHYSIC_CONSTANTS.BALL_FRICTION}
@@ -98,13 +104,15 @@ export default function Balls() {
           onSleep={() => {
             ballBodies.current[ballId].isAwake = false;
 
-            if (
-              ballBodies.current
-                .flatMap((body) => body.isAwake)
-                .every((isAwake) => isAwake === false)
-            ) {
+            const gameMode = useGameStore.getState().gameMode;
+            if (gameMode === "idle" || gameMode === "end") return;
+
+            if (ballBodies.current.every(({ isAwake }) => isAwake === false)) {
               setGameMode("idle");
-              setGameMode("shot");
+
+              // handleEndTurn();
+              if (useGameStore.getState().selectedBall?.id === 0)
+                setGameMode("shot");
             }
           }}
           onWake={() => {
@@ -112,12 +120,6 @@ export default function Balls() {
 
             ballBodies.current[ballId].isAwake = true;
             setGameMode("moving");
-          }}
-          onIntersectionEnter={({ target }) => {
-            const ball = ballBodies.current[ballId];
-
-            ball.isOnPlay = false;
-            ball.isAwake = false;
           }}
         >
           <mesh
@@ -152,6 +154,30 @@ export default function Balls() {
           </mesh>
         </RigidBody>
       ))}
+
+      <CuboidCollider
+        args={[0.75, 0.15, 1.2]}
+        position={[0, 0.1, 0]}
+        sensor
+        onIntersectionExit={(e) => {
+          const ballId = e.other.rigidBodyObject?.name;
+
+          if (
+            ballId === undefined ||
+            ballBodies.current[+ballId].isOnPlay === false
+          )
+            return;
+
+          const ball = ballBodies.current[+ballId];
+
+          ball.isOnPlay = false;
+          ball.isAwake = false;
+
+          if (ballId === "0") {
+            setGameMode("end");
+          }
+        }}
+      />
     </>
   );
 }

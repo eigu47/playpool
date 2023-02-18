@@ -9,7 +9,7 @@ type BallState = {
   mesh: BallMesh;
   body: BallBody;
 };
-export type GameModes = "idle" | "shot" | "moving";
+export type GameModes = "idle" | "shot" | "moving" | "end";
 
 type GameStore = {
   selectedBall: BallState | null;
@@ -30,56 +30,56 @@ export const useGameStore = create<GameStore>((set, get) => ({
   gameMode: "idle",
   ballsState: [],
 
-  setSelectedBall: (ball) => set({ selectedBall: get().ballsState[ball] }),
+  setSelectedBall(ball) {
+    set({ selectedBall: get().ballsState[ball] });
+  },
   addBallMesh(mesh, index) {
-    set((state) => {
-      const ballsState = state.ballsState;
-
+    set(({ ballsState }) => {
       ballsState[index] = {
         ...ballsState[index],
         id: index,
         mesh,
       };
 
-      return {
-        ballsState,
-      };
+      return { ballsState };
     });
   },
   addBallBody(body, index) {
-    set((state) => {
-      const ballsState = state.ballsState;
-
+    set(({ ballsState }) => {
       ballsState[index] = {
         ...ballsState[index],
         id: index,
         body,
       };
 
-      return {
-        ballsState,
-      };
+      return { ballsState };
     });
   },
-  setShotNormal: (normal) => set({ shotNormal: normal }),
+  setShotNormal(normal) {
+    set({ shotNormal: normal });
+  },
   setGameMode: (mode) => {
+    const prevMode = get().gameMode;
+
     if (mode === "shot") {
-      if (get().gameMode === "idle" && get().selectedBall?.id === 0)
-        set({ gameMode: "shot" });
+      if (prevMode === "idle") set({ gameMode: "shot" });
+
       return;
     }
 
     set({ gameMode: mode });
   },
-  resetPositions: (positions = getInitialPositions()) => {
-    get()
-      .ballsState.flatMap((ball) => ball.body)
-      .forEach((body, index) => {
+  resetPositions(positions = getInitialPositions()) {
+    set(({ ballsState }) => {
+      ballsState.forEach(({ body }, index) => {
         body.setLinvel({ x: 0, y: 0, z: 0 });
         body.setAngvel({ x: 0, y: 0, z: 0 });
         body.setTranslation(positions[index]);
 
         body.isOnPlay = true;
       });
+
+      return { ballsState };
+    });
   },
 }));

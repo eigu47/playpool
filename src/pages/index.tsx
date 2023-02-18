@@ -1,29 +1,33 @@
 import { type NextPage } from "next";
 import dynamic from "next/dynamic";
-import { useRouter } from "next/router";
+
+import Modal from "@/components/dom/Modal";
+import ResetBtn from "@/components/dom/ResetBtn";
+import { useGameStore } from "@/utils/store";
 
 const Scene = dynamic(() => import("@/components/canvas/Scene"), {
   ssr: false,
 });
 
 const Home: NextPage = () => {
-  const router = useRouter();
-
   return (
     <>
       <Scene />
-      <div className="absolute top-1/2 left-1/2 z-10 -translate-x-1/2 -translate-y-1/2 transform">
-        <button
-          className=""
-          onClick={() => {
-            router.push("/multiplayer");
-          }}
-        >
-          MULTIPLAYER
-        </button>
-      </div>
+      <IndexGUI />
     </>
   );
 };
 
 export default Home;
+
+function IndexGUI() {
+  const mode = useGameStore((state) => state.gameMode);
+
+  return (
+    <>
+      <Modal showModal={mode === "end"}>
+        <ResetBtn />
+      </Modal>
+    </>
+  );
+}

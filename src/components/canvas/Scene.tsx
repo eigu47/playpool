@@ -16,10 +16,7 @@ type Props = {
 export default function Scene({ children }: Props) {
   return (
     <>
-      <Canvas
-        camera={{ position: [0, 0, 5] }}
-        className="absolute h-full w-full"
-      >
+      <Canvas camera={{ position: [0, 0, 5] }}>
         <ambientLight />
         <pointLight position={[10, 10, 10]} intensity={0.1} />
         <color args={["hsl(210, 50%, 20%)"]} attach="background" />

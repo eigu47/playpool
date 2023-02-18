@@ -7,7 +7,7 @@ Command: npx gltfjsx@6.0.9 D:/udemy/playpool/public/untitled.glb -t
 import React from "react";
 
 import { Center, useGLTF } from "@react-three/drei";
-import { CuboidCollider, RigidBody } from "@react-three/rapier";
+import { RigidBody } from "@react-three/rapier";
 import type * as THREE from "three";
 import type { GLTF } from "three-stdlib";
 
@@ -59,7 +59,6 @@ export default function Model(props: JSX.IntrinsicElements["group"]) {
         geometry={nodes.Object_2001.geometry}
         material={materials.None}
       /> */}
-      <CuboidCollider args={[2, 0.1, 3.5]} position={[0, -0.15, 0]} sensor />
     </>
   );
 }
