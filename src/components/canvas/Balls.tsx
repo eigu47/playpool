@@ -79,7 +79,7 @@ export default function Balls() {
       {BALLS.map(({ id: ballId, type }) => (
         <RigidBody
           ref={(ref) => {
-            if (ref === null) return;
+            if (ref == null) return;
 
             ballBodies.current[ballId] = {
               ...ref,
@@ -87,7 +87,10 @@ export default function Balls() {
               isOnPlay: true,
             };
 
-            addBallBody(ballBodies.current[ballId], ballId);
+            const ballBody = ballBodies.current[ballId];
+            if (ballBody == undefined) return;
+
+            addBallBody(ballBody, ballId);
           }}
           name={ballId.toString()}
           key={ballId}
@@ -102,10 +105,14 @@ export default function Balls() {
             Math.PI * Math.random() * 2,
           ]}
           onSleep={() => {
-            ballBodies.current[ballId].isAwake = false;
+            const ballBody = ballBodies.current[ballId];
+            if (ballBody == undefined || ballBody.isOnPlay === false) return;
+
+            ballBody.isAwake = false;
+            addBallBody(ballBody, ballId);
 
             const gameMode = useGameStore.getState().gameMode;
-            if (gameMode === "idle" || gameMode === "end") return;
+            if (gameMode === "idle") return;
 
             if (ballBodies.current.every(({ isAwake }) => isAwake === false)) {
               setGameMode("idle");
@@ -116,9 +123,12 @@ export default function Balls() {
             }
           }}
           onWake={() => {
-            if (ballBodies.current[ballId].isOnPlay === false) return;
+            const ballBody = ballBodies.current[ballId];
+            if (ballBody == undefined || ballBody.isOnPlay === false) return;
 
-            ballBodies.current[ballId].isAwake = true;
+            ballBody.isAwake = true;
+            addBallBody(ballBody, ballId);
+
             setGameMode("moving");
           }}
         >
@@ -130,7 +140,7 @@ export default function Balls() {
             }}
             name={`ball${ballId}`}
             geometry={ballGeometry}
-            {...(ballId === 0 && { ...(bind() as any) })}
+            {...(ballId === 0 && (bind() as Mesh))}
             onClick={() => {
               setSelectedBall(ballId);
 
@@ -161,21 +171,14 @@ export default function Balls() {
         sensor
         onIntersectionExit={(e) => {
           const ballId = e.other.rigidBodyObject?.name;
+          if (ballId == undefined) return;
 
-          if (
-            ballId === undefined ||
-            ballBodies.current[+ballId].isOnPlay === false
-          )
-            return;
+          const ballBody = ballBodies.current[+ballId];
+          if (ballBody == undefined || ballBody.isOnPlay == false) return;
 
-          const ball = ballBodies.current[+ballId];
-
-          ball.isOnPlay = false;
-          ball.isAwake = false;
-
-          if (ballId === "0") {
-            setGameMode("end");
-          }
+          ballBody.isOnPlay = false;
+          ballBody.isAwake = false;
+          addBallBody(ballBody, +ballId as (typeof BALLS)[number]["id"]);
         }}
       />
     </>

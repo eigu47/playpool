@@ -21,11 +21,13 @@ const Home: NextPage = () => {
 export default Home;
 
 function IndexGUI() {
-  const mode = useGameStore((state) => state.gameMode);
+  const ball0OnPlay = useGameStore(
+    (state) => state.ballsState[0]?.body?.isOnPlay
+  );
 
   return (
     <>
-      <Modal showModal={mode === "end"}>
+      <Modal showModal={ball0OnPlay == undefined ? false : !ball0OnPlay}>
         <ResetBtn />
       </Modal>
     </>

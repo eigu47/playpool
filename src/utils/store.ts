@@ -2,23 +2,23 @@ import type { Vector3 } from "three";
 import create from "zustand";
 
 import type { BallBody, BallMesh } from "@/components/canvas/Balls";
-import { getInitialPositions } from "@/constants/BALLS";
+import { getInitialPositions, type BALLS } from "@/constants/BALLS";
 
 type BallState = {
-  id: number;
-  mesh: BallMesh;
-  body: BallBody;
+  id: (typeof BALLS)[number]["id"];
+  mesh?: BallMesh;
+  body?: BallBody;
 };
-export type GameModes = "idle" | "shot" | "moving" | "end";
+export type GameModes = "idle" | "shot" | "moving";
 
 type GameStore = {
   selectedBall: BallState | null;
   ballsState: BallState[];
   shotNormal: Vector3 | null;
   gameMode: GameModes;
-  setSelectedBall: (ball: number) => void;
-  addBallMesh: (mesh: BallMesh, index: number) => void;
-  addBallBody: (body: BallBody, index: number) => void;
+  setSelectedBall: (ball: BallState["id"]) => void;
+  addBallMesh: (mesh: BallMesh, id: BallState["id"]) => void;
+  addBallBody: (body: BallBody, id: BallState["id"]) => void;
   setShotNormal: (normal: Vector3 | null) => void;
   setGameMode: (mode: GameModes) => void;
   resetPositions: (positions?: Vector3[]) => void;
@@ -33,22 +33,22 @@ export const useGameStore = create<GameStore>((set, get) => ({
   setSelectedBall(ball) {
     set({ selectedBall: get().ballsState[ball] });
   },
-  addBallMesh(mesh, index) {
+  addBallMesh(mesh, id) {
     set(({ ballsState }) => {
-      ballsState[index] = {
-        ...ballsState[index],
-        id: index,
+      ballsState[id] = {
+        ...ballsState[id],
+        id,
         mesh,
       };
 
       return { ballsState };
     });
   },
-  addBallBody(body, index) {
+  addBallBody(body, id) {
     set(({ ballsState }) => {
-      ballsState[index] = {
-        ...ballsState[index],
-        id: index,
+      ballsState[id] = {
+        ...ballsState[id],
+        id,
         body,
       };
 
@@ -72,9 +72,12 @@ export const useGameStore = create<GameStore>((set, get) => ({
   resetPositions(positions = getInitialPositions()) {
     set(({ ballsState }) => {
       ballsState.forEach(({ body }, index) => {
+        const pos = positions[index];
+        if (body == undefined || pos == undefined) return;
+
         body.setLinvel({ x: 0, y: 0, z: 0 });
         body.setAngvel({ x: 0, y: 0, z: 0 });
-        body.setTranslation(positions[index]);
+        body.setTranslation(pos);
 
         body.isOnPlay = true;
       });
