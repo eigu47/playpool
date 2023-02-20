@@ -26,12 +26,12 @@ export function shuffleArray<T>(indexes: T[]): T[] {
   for (let i = indexes.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
 
-    [indexes[i], indexes[j]] = [indexes[j]!, indexes[i]!];
+    // [indexes[i], indexes[j]] = [indexes[j]!, indexes[i]!];
 
-    // const [ii, jj] = [indexes[i], indexes[j]];
-    // if (ii != undefined && jj != undefined) {
-    //   [indexes[i], indexes[j]] = [jj, ii];
-    // }
+    const [ii, jj] = [indexes[i], indexes[j]];
+    if (ii != undefined && jj != undefined) {
+      [indexes[i], indexes[j]] = [jj, ii];
+    }
   }
   return indexes;
 }

@@ -76,7 +76,7 @@ export default function Balls() {
 
   return (
     <>
-      {BALLS.map(({ id: ballId, type }) => (
+      {BALLS.map(({ id: ballId, type: _ }) => (
         <RigidBody
           ref={(ref) => {
             if (ref == null) return;

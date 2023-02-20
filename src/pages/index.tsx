@@ -27,7 +27,7 @@ function IndexGUI() {
 
   return (
     <>
-      <Modal showModal={ball0OnPlay == undefined ? false : !ball0OnPlay}>
+      <Modal showModal={ball0OnPlay != undefined && ball0OnPlay === false}>
         <ResetBtn />
       </Modal>
     </>

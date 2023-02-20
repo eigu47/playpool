@@ -72,12 +72,12 @@ export const useGameStore = create<GameStore>((set, get) => ({
   resetPositions(positions = getInitialPositions()) {
     set(({ ballsState }) => {
       ballsState.forEach(({ body }, index) => {
-        const pos = positions[index];
-        if (body == undefined || pos == undefined) return;
+        const position = positions[index];
+        if (body == undefined || position == undefined) return;
 
         body.setLinvel({ x: 0, y: 0, z: 0 });
         body.setAngvel({ x: 0, y: 0, z: 0 });
-        body.setTranslation(pos);
+        body.setTranslation(position);
 
         body.isOnPlay = true;
       });
