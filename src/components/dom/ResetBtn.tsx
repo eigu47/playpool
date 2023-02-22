@@ -1,13 +1,13 @@
 import React from "react";
 
-import { useGameStore } from "@/utils/store";
+import { useBallsStore } from "@/utils/ballsStore";
 
 type Props = {
   className?: string;
 };
 
 export default function ResetBtn({ className }: Props) {
-  const resetPositions = useGameStore((state) => state.resetPositions);
+  const resetPositions = useBallsStore((state) => state.resetPositions);
 
   return (
     <button

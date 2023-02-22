@@ -7,7 +7,8 @@ import { Vector3 } from "three";
 import { type Line2 } from "three-stdlib";
 import type { OrbitControls as OrbitControlsImpl } from "three-stdlib";
 
-import { useGameStore, type GameModes } from "@/utils/store";
+import { useBallsStore } from "@/utils/ballsStore";
+import { useGameStore, type GameModes } from "@/utils/gameStore";
 
 const cameraCenter = new Vector3();
 const lineVector = new Vector3();
@@ -51,7 +52,7 @@ export default function Camera() {
 
   const gameMode = useGameStore((state) => state.gameMode);
   const setShotNormal = useGameStore((state) => state.setShotNormal);
-  const selectedBall = useGameStore((state) => state.selectedBall);
+  const selectedBall = useBallsStore((state) => state.selectedBall);
 
   const cameraType = debugOn ? "debug" : gameMode;
 

@@ -1,61 +1,22 @@
-import React, { useRef } from "react";
+import React from "react";
 
-import { useTexture } from "@react-three/drei";
-import {
-  CuboidCollider,
-  RigidBody,
-  type RigidBodyApi,
-} from "@react-three/rapier";
+import { CuboidCollider } from "@react-three/rapier";
 import { useDrag } from "@use-gesture/react";
-import {
-  type Mesh,
-  SphereGeometry,
-  Vector3,
-  type BufferGeometry,
-  type Material,
-} from "three";
+import { SphereGeometry, Vector3 } from "three";
 
-import { getInitialPositions, BALLS } from "@/constants/BALLS";
-import { PHYSIC_CONSTANTS } from "@/constants/PHYSICS";
-import { useGameStore } from "@/utils/store";
+import Ball from "@/components/canvas/Ball";
+import { BALLS, getInitialPositions } from "@/constants/BALLS";
+import { useBallsStore } from "@/utils/ballsStore";
+import { useGameStore } from "@/utils/gameStore";
 
-export interface BallBody extends RigidBodyApi {
-  isAwake: boolean;
-  isOnPlay: boolean;
-}
-
-export type BallMesh = Mesh<BufferGeometry, Material | Material[]> | null;
-
+const COLOR_BALLS = BALLS.filter(({ id }) => id !== 0);
 const ballGeometry = new SphereGeometry(0.026, 16, 16);
 const forceVector = new Vector3();
 
 export default function Balls() {
-  const ballTextures = useTexture([
-    "/balls/0.jpg",
-    "/balls/1.jpg",
-    "/balls/2.jpg",
-    "/balls/3.jpg",
-    "/balls/4.jpg",
-    "/balls/5.jpg",
-    "/balls/6.jpg",
-    "/balls/7.jpg",
-    "/balls/8.jpg",
-    "/balls/9.jpg",
-    "/balls/10.jpg",
-    "/balls/11.jpg",
-    "/balls/12.jpg",
-    "/balls/13.jpg",
-    "/balls/14.jpg",
-    "/balls/15.jpg",
-  ]);
-  const setGameMode = useGameStore((state) => state.setGameMode);
-  const setSelectedBall = useGameStore((state) => state.setSelectedBall);
-  const addBallBody = useGameStore((state) => state.addBallBody);
-  const addBallMesh = useGameStore((state) => state.addBallMesh);
-
-  const ballBodies = useRef<BallBody[]>([]);
-  const ballMeshes = useRef<BallMesh[]>([]);
   const positions = getInitialPositions();
+  const setGameMode = useGameStore((state) => state.setGameMode);
+  const setBallState = useBallsStore((state) => state.setBallState);
 
   const bind = useDrag(({ last, movement }) => {
     if (
@@ -70,115 +31,41 @@ export default function Balls() {
         .multiplyScalar(force)
         .setY(0);
 
-      ballBodies.current[0]?.applyImpulse(forceVector);
+      useBallsStore.getState().ballsData[0]?.body?.applyImpulse(forceVector);
     }
   });
 
   return (
     <>
-      {BALLS.map(({ id: ballId, type: _ }) => (
-        <RigidBody
-          ref={(ref) => {
-            if (ref == null) return;
-
-            ballBodies.current[ballId] = {
-              ...ref,
-              isAwake: false,
-              isOnPlay: true,
-            };
-
-            const ballBody = ballBodies.current[ballId];
-            if (ballBody == undefined) return;
-
-            addBallBody(ballBody, ballId);
-          }}
-          name={ballId.toString()}
-          key={ballId}
-          colliders="ball"
-          friction={PHYSIC_CONSTANTS.BALL_FRICTION}
-          restitution={PHYSIC_CONSTANTS.BALL_RESTITUTION}
-          angularDamping={PHYSIC_CONSTANTS.DAMPING}
-          position={positions[ballId]}
-          rotation={[
-            Math.PI * Math.random() * 2,
-            Math.PI * Math.random() * 2,
-            Math.PI * Math.random() * 2,
-          ]}
-          onSleep={() => {
-            const ballBody = ballBodies.current[ballId];
-            if (ballBody == undefined || ballBody.isOnPlay === false) return;
-
-            ballBody.isAwake = false;
-            addBallBody(ballBody, ballId);
-
-            const gameMode = useGameStore.getState().gameMode;
-            if (gameMode === "idle") return;
-
-            if (ballBodies.current.every(({ isAwake }) => isAwake === false)) {
-              setGameMode("idle");
-
-              // handleEndTurn();
-              if (useGameStore.getState().selectedBall?.id === 0)
-                setGameMode("shot");
-            }
-          }}
-          onWake={() => {
-            const ballBody = ballBodies.current[ballId];
-            if (ballBody == undefined || ballBody.isOnPlay === false) return;
-
-            ballBody.isAwake = true;
-            addBallBody(ballBody, ballId);
-
-            setGameMode("moving");
-          }}
-        >
-          <mesh
-            ref={(ref) => {
-              ballMeshes.current[ballId] = ref;
-
-              addBallMesh(ref, ballId);
-            }}
-            name={`ball${ballId}`}
-            geometry={ballGeometry}
-            {...(ballId === 0 && (bind() as Mesh))}
-            onClick={() => {
-              setSelectedBall(ballId);
-
-              if (ballId === 0) {
-                setGameMode("shot");
-                return;
-              }
-
-              setGameMode("idle");
-            }}
-            onPointerEnter={() => {
-              if (ballId !== 0) return;
-              document.body.style.cursor = "pointer";
-            }}
-            onPointerLeave={() => {
-              if (ballId !== 0) return;
-              document.body.style.cursor = "default";
-            }}
-          >
-            <meshStandardMaterial map={ballTextures[ballId]} />
-          </mesh>
-        </RigidBody>
+      <Ball
+        ball={BALLS[0]}
+        position={positions[0]!}
+        ballGeometry={ballGeometry}
+        bind={bind}
+        onClick={() => setGameMode("shot")}
+        onPointerEnter={() => (document.body.style.cursor = "pointer")}
+        onPointerLeave={() => (document.body.style.cursor = "default")}
+      />
+      {COLOR_BALLS.map((ball) => (
+        <Ball
+          ball={ball}
+          key={ball.id}
+          position={positions[ball.id]!}
+          ballGeometry={ballGeometry}
+        />
       ))}
-
       <CuboidCollider
-        args={[0.75, 0.15, 1.2]}
-        position={[0, 0.1, 0]}
+        args={[0.7, 0.1, 1.2]}
+        position={[0, -0.12, 0]}
         sensor
-        onIntersectionExit={(e) => {
+        onIntersectionEnter={(e) => {
           const ballId = e.other.rigidBodyObject?.name;
           if (ballId == undefined) return;
 
-          const ballBody = ballBodies.current[+ballId];
-          if (ballBody == undefined || ballBody.isOnPlay == false) return;
+          const ballState = useBallsStore.getState().ballsData[+ballId]?.state;
+          if (ballState === "pocket" || ballState === "out") return;
 
-          ballBody.isOnPlay = false;
-          ballBody.isAwake = false;
-          addBallBody(ballBody, +ballId as (typeof BALLS)[number]["id"]);
+          setBallState("pocket", +ballId as (typeof BALLS)[number]["id"]);
         }}
       />
     </>

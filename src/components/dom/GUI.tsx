@@ -4,7 +4,7 @@ import { Leva } from "leva";
 import { useRouter } from "next/router";
 
 import ResetBtn from "@/components/dom/ResetBtn";
-import { useGameStore } from "@/utils/store";
+import { useGameStore } from "@/utils/gameStore";
 
 export default function GUI() {
   const gameMode = useGameStore((state) => state.gameMode);

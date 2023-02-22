@@ -3,7 +3,7 @@ import dynamic from "next/dynamic";
 
 import Modal from "@/components/dom/Modal";
 import ResetBtn from "@/components/dom/ResetBtn";
-import { useGameStore } from "@/utils/store";
+import { useBallsStore } from "@/utils/ballsStore";
 
 const Scene = dynamic(() => import("@/components/canvas/Scene"), {
   ssr: false,
@@ -21,13 +21,11 @@ const Home: NextPage = () => {
 export default Home;
 
 function IndexGUI() {
-  const ball0OnPlay = useGameStore(
-    (state) => state.ballsState[0]?.body?.isOnPlay
-  );
+  const cueBallState = useBallsStore((state) => state.ballsData[0]?.state);
 
   return (
     <>
-      <Modal showModal={ball0OnPlay != undefined && ball0OnPlay === false}>
+      <Modal showModal={cueBallState === "pocket"}>
         <ResetBtn />
       </Modal>
     </>
