@@ -4,71 +4,81 @@ import create from "zustand";
 
 import { getInitialPositions, type BALLS } from "@/constants/BALLS";
 
+type BallId = (typeof BALLS)[number]["id"];
+export type BallStatus = "sleep" | "wake" | "pocket" | "out";
 export type MeshGeometry = Mesh<BufferGeometry, Material | Material[]>;
 
-export type BallsData = {
-  id: (typeof BALLS)[number]["id"];
-  state: BallStates;
+export type BallState = {
+  id: BallId;
+  status: BallStatus;
   body?: RigidBodyApi;
   mesh?: MeshGeometry;
 };
-export type BallStates = "sleep" | "wake" | "pocket" | "out";
 
 type BallsStore = {
-  selectedBall: BallsData | null;
-  ballsData: BallsData[];
-  setSelectedBall: (ball: BallsData["id"]) => void;
-  addBallBody: (body: RigidBodyApi, id: BallsData["id"]) => void;
-  addBallMesh: (mesh: MeshGeometry, id: BallsData["id"]) => void;
-  setBallState: (state: BallStates, id: BallsData["id"]) => void;
+  selectedBall: BallState | null;
+  ballsState: BallState[];
+  setSelectedBall: (id: BallId) => void;
+  addBall: <Type extends "body" | "mesh">(
+    type: Type,
+    ref: (Type extends "body" ? RigidBodyApi : MeshGeometry) | null,
+    id: BallId
+  ) => void;
+  setBallStatus: (status: BallStatus, id: BallId, force?: boolean) => void;
   resetPositions: (positions?: Vector3[]) => void;
 };
 
 export const useBallsStore = create<BallsStore>((set, get) => ({
   selectedBall: null,
-  ballsData: [],
+  ballsState: [],
 
-  setSelectedBall(ball) {
-    set(({ ballsData: ballsState }) => ({ selectedBall: ballsState[ball] }));
+  setSelectedBall(id) {
+    set(({ ballsState }) => ({ selectedBall: ballsState[id] }));
   },
-  addBallBody(body, id) {
-    set(({ ballsData: ballsState }) => {
+
+  addBall(type, ref, id) {
+    if (ref == null) return;
+
+    set((state) => {
+      const ballsState = [...state.ballsState];
+
       ballsState[id] = {
         ...ballsState[id],
         id,
-        state: "sleep",
-        body,
+        status: "sleep",
+        [type]: ref,
       };
-
-      return { ballsData: ballsState };
+      return { ballsState };
     });
   },
-  addBallMesh(mesh, id) {
-    set(({ ballsData: ballsState }) => {
+
+  setBallStatus(status, id, force = false) {
+    const ballState = get().ballsState[id];
+    if (
+      force === false &&
+      (ballState == undefined ||
+        ballState.status === "pocket" ||
+        ballState.status === "out")
+    )
+      return;
+
+    set((state) => {
+      const ballsState = [...state.ballsState];
+
       ballsState[id] = {
         ...ballsState[id],
         id,
-        state: "sleep",
-        mesh,
+        status,
       };
-
-      return { ballsData: ballsState };
+      return { ballsState };
     });
   },
-  setBallState(state, id) {
-    set(({ ballsData: ballsState }) => {
-      ballsState[id] = {
-        ...ballsState[id],
-        id,
-        state,
-      };
 
-      return { ballsData: ballsState };
-    });
-  },
   resetPositions(positions = getInitialPositions()) {
-    set(({ ballsData: ballsState }) => {
-      ballsState.forEach(({ body, state }, index) => {
+    set((state) => {
+      const ballsState = [...state.ballsState];
+
+      ballsState.forEach(({ body }, index) => {
         const position = positions[index];
         if (body == undefined || position == undefined) return;
 
@@ -76,10 +86,10 @@ export const useBallsStore = create<BallsStore>((set, get) => ({
         body.setAngvel({ x: 0, y: 0, z: 0 });
         body.setTranslation(position);
 
-        state = "sleep";
+        get().setBallStatus("sleep", index as BallId, true);
       });
 
-      return { ballsData: ballsState };
+      return { ballsState };
     });
   },
 }));

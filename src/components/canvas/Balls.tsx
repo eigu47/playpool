@@ -16,7 +16,7 @@ const forceVector = new Vector3();
 export default function Balls() {
   const positions = getInitialPositions();
   const setGameMode = useGameStore((state) => state.setGameMode);
-  const setBallState = useBallsStore((state) => state.setBallState);
+  const setBallState = useBallsStore((state) => state.setBallStatus);
 
   const bind = useDrag(({ last, movement }) => {
     if (
@@ -31,7 +31,7 @@ export default function Balls() {
         .multiplyScalar(force)
         .setY(0);
 
-      useBallsStore.getState().ballsData[0]?.body?.applyImpulse(forceVector);
+      useBallsStore.getState().ballsState[0]?.body?.applyImpulse(forceVector);
     }
   });
 
@@ -39,7 +39,7 @@ export default function Balls() {
     <>
       <Ball
         ball={BALLS[0]}
-        position={positions[0]!}
+        position={positions[0]}
         ballGeometry={ballGeometry}
         bind={bind}
         onClick={() => setGameMode("shot")}
@@ -50,7 +50,7 @@ export default function Balls() {
         <Ball
           ball={ball}
           key={ball.id}
-          position={positions[ball.id]!}
+          position={positions[ball.id]}
           ballGeometry={ballGeometry}
         />
       ))}
@@ -61,9 +61,6 @@ export default function Balls() {
         onIntersectionEnter={(e) => {
           const ballId = e.other.rigidBodyObject?.name;
           if (ballId == undefined) return;
-
-          const ballState = useBallsStore.getState().ballsData[+ballId]?.state;
-          if (ballState === "pocket" || ballState === "out") return;
 
           setBallState("pocket", +ballId as (typeof BALLS)[number]["id"]);
         }}

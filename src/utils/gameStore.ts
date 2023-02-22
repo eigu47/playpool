@@ -16,28 +16,24 @@ export const useGameStore = create<GameStore>((set, get) => ({
   shotNormal: null,
   gameMode: "idle",
 
-  setShotNormal(normal) {
-    set({ shotNormal: normal });
+  setShotNormal(shotNormal) {
+    set({ shotNormal });
   },
-  setGameMode: (mode) => {
-    if (mode === "shot") {
-      if (get().gameMode === "idle") set({ gameMode: "shot" });
 
-      return;
+  setGameMode(gameMode) {
+    if (gameMode === "shot") {
+      if (get().gameMode !== "idle") return;
     }
 
-    if (mode === "idle") {
+    if (gameMode === "idle") {
       if (
         useBallsStore
           .getState()
-          .ballsData.every(({ state }) => state === "sleep")
-      ) {
-        set({ gameMode: "idle" });
-
+          .ballsState.every(({ status: state }) => state === "sleep") === false
+      )
         return;
-      }
     }
 
-    set({ gameMode: mode });
+    set({ gameMode });
   },
 }));
