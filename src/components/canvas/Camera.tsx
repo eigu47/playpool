@@ -12,6 +12,7 @@ import { useGameStore, type GameModes } from "@/utils/gameStore";
 
 const cameraCenter = new Vector3();
 const lineVector = new Vector3();
+const lineEndVector = new Vector3();
 
 type Line2Props = Object3DNode<Line2, typeof Line2> & {
   setPoints: (
@@ -57,28 +58,36 @@ export default function Camera() {
   const cameraType = debugOn ? "debug" : gameMode;
 
   useFrame(({ camera }, delta) => {
-    if (!selectedBall) return null;
+    if (selectedBall !== null) {
+      selectedBall.mesh?.getWorldPosition(cameraCenter);
+      cameraRef.current?.target.lerp(cameraCenter, delta * 4);
 
-    selectedBall.mesh?.getWorldPosition(cameraCenter);
-    cameraRef.current?.target.lerp(cameraCenter, delta * 4);
+      if (gameMode === "shot") {
+        lineVector
+          .subVectors(cameraCenter, camera.position)
+          .normalize()
+          .setY(cameraCenter.y);
 
-    if (gameMode === "shot") {
-      lineVector
-        .subVectors(cameraCenter, camera.position)
-        .normalize()
-        .setY(cameraCenter.y);
+        setShotNormal(lineVector);
 
-      setShotNormal(lineVector);
-
-      lineRef.current?.setPoints(
-        cameraCenter,
-        cameraCenter
-          .clone()
-          .add(lineVector.clone().multiplyScalar(2))
-          .setY(cameraCenter.y),
-        cameraCenter
-      );
+        lineRef.current?.setPoints(
+          cameraCenter,
+          lineEndVector.lerp(
+            cameraCenter
+              .clone()
+              .add(lineVector.clone().multiplyScalar(2))
+              .setY(cameraCenter.y),
+            delta * 30
+          ),
+          cameraCenter
+        );
+      }
     }
+
+    if (gameMode === "menu") {
+    }
+
+    return null;
   });
 
   return (

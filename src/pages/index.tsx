@@ -21,7 +21,7 @@ const Home: NextPage = () => {
 export default Home;
 
 function IndexGUI() {
-  const cueBallState = useBallsStore((state) => state.ballsData[0]?.state);
+  const cueBallState = useBallsStore((state) => state.ballsState[0]?.status);
 
   return (
     <>
