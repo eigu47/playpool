@@ -56,6 +56,7 @@ export default function Ball({
         ]}
         onSleep={() => {
           setBallState("sleep", ballId);
+<<<<<<< HEAD
 
           if (
             useBallsStore
@@ -66,6 +67,9 @@ export default function Ball({
 
             handleEndTurn && handleEndTurn();
           }
+=======
+          setGameMode("idle");
+>>>>>>> 0adc09b393ba5301080217e913bf209029466dab
         }}
         onWake={() => {
           setBallState("wake", ballId);

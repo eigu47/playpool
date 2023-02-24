@@ -54,6 +54,7 @@ export const useBallsStore = create<BallsStore>((set, get) => ({
 
   setBallStatus(status, id, force = false) {
     const ballState = get().ballsState[id];
+<<<<<<< HEAD
 
     if (force === false) {
       if (
@@ -63,6 +64,15 @@ export const useBallsStore = create<BallsStore>((set, get) => ({
       )
         return;
     }
+=======
+    if (
+      force === false &&
+      (ballState == undefined ||
+        ballState.status === "pocket" ||
+        ballState.status === "out")
+    )
+      return;
+>>>>>>> 0adc09b393ba5301080217e913bf209029466dab
 
     set((state) => {
       const ballsState = [...state.ballsState];
@@ -79,16 +89,29 @@ export const useBallsStore = create<BallsStore>((set, get) => ({
   resetPositions(positions = getInitialPositions()) {
     set((state) => {
       const ballsState = [...state.ballsState];
+<<<<<<< HEAD
+=======
+
+      ballsState.forEach(({ body }, index) => {
+        const position = positions[index];
+        if (body == undefined || position == undefined) return;
+>>>>>>> 0adc09b393ba5301080217e913bf209029466dab
 
       ballsState.forEach((state, index) => {
         const position = positions[index];
         if (state.body == undefined || position == undefined) return;
 
+<<<<<<< HEAD
         state.body.setLinvel({ x: 0, y: 0, z: 0 });
         state.body.setAngvel({ x: 0, y: 0, z: 0 });
         state.body.setTranslation(position);
         state.status = "wake";
       });
+=======
+        get().setBallStatus("sleep", index as BallId, true);
+      });
+
+>>>>>>> 0adc09b393ba5301080217e913bf209029466dab
       return { ballsState };
     });
 
