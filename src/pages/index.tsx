@@ -1,11 +1,9 @@
 import { type NextPage } from "next";
 import dynamic from "next/dynamic";
 
-import Modal from "@/components/dom/Modal";
-import ResetBtn from "@/components/dom/ResetBtn";
+import IndexGUI from "@/components/dom/IndexGUI";
 import Score from "@/components/dom/Score";
 import { BALLS } from "@/constants/BALLS";
-import { useBallsStore } from "@/utils/ballsStore";
 import { useGameStore } from "@/utils/gameStore";
 
 const Scene = dynamic(() => import("@/components/canvas/Scene"), {
@@ -29,15 +27,3 @@ const Home: NextPage = () => {
 };
 
 export default Home;
-
-function IndexGUI() {
-  const cueBallState = useBallsStore((state) => state.ballsState[0]?.status);
-
-  return (
-    <>
-      <Modal showModal={cueBallState === "pocket" || cueBallState === "out"}>
-        <ResetBtn />
-      </Modal>
-    </>
-  );
-}

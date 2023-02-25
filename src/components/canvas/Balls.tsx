@@ -15,9 +15,15 @@ const forceVector = new Vector3();
 
 type Props = {
   handleEndTurn?: () => void;
+  handleWakeBall?: (ballId: number) => void;
+  handleEndShot?: (forceVector: Vector3) => void;
 };
 
-export default function Balls({ handleEndTurn }: Props) {
+export default function Balls({
+  handleEndTurn,
+  handleEndShot,
+  handleWakeBall,
+}: Props) {
   const positions = getInitialPositions();
   const setGameMode = useGameStore((state) => state.setGameMode);
   const setBallState = useBallsStore((state) => state.setBallStatus);
@@ -36,6 +42,8 @@ export default function Balls({ handleEndTurn }: Props) {
         .setY(0);
 
       useBallsStore.getState().ballsState[0]?.body?.applyImpulse(forceVector);
+
+      handleEndShot && handleEndShot(forceVector);
     }
   });
 
@@ -46,6 +54,7 @@ export default function Balls({ handleEndTurn }: Props) {
         position={positions[0]}
         ballGeometry={ballGeometry}
         handleEndTurn={handleEndTurn}
+        handleWakeBall={handleWakeBall}
         onClick={() => setGameMode("shot")}
         bind={bind}
         onPointerEnter={() => (document.body.style.cursor = "pointer")}
@@ -53,11 +62,12 @@ export default function Balls({ handleEndTurn }: Props) {
       />
       {COLOR_BALLS.map((ball) => (
         <Ball
-          ball={ball}
           key={ball.id}
+          ball={ball}
           position={positions[ball.id]}
           ballGeometry={ballGeometry}
           handleEndTurn={handleEndTurn}
+          handleWakeBall={handleWakeBall}
           onClick={() => setGameMode("idle")}
         />
       ))}

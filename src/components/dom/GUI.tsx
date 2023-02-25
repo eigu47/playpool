@@ -3,7 +3,7 @@ import React from "react";
 import { Leva } from "leva";
 import { useRouter } from "next/router";
 
-import ResetBtn from "@/components/dom/ResetBtn";
+import { ResetBtn } from "@/components/dom/Button";
 import { useGameStore } from "@/utils/gameStore";
 
 export default function GUI() {

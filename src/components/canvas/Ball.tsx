@@ -20,6 +20,7 @@ type Props = {
   onPointerEnter?: () => void;
   onPointerLeave?: () => void;
   handleEndTurn?: () => void;
+  handleWakeBall?: (ballId: number) => void;
 };
 
 export default function Ball({
@@ -31,6 +32,7 @@ export default function Ball({
   onPointerEnter,
   onPointerLeave,
   handleEndTurn,
+  handleWakeBall,
 }: Props) {
   const ballTexture = useTexture(`/balls/${ballId}.jpg`);
   const setGameMode = useGameStore((state) => state.setGameMode);
@@ -68,6 +70,7 @@ export default function Ball({
           }
         }}
         onWake={() => {
+          handleWakeBall && handleWakeBall(ballId);
           setBallState("wake", ballId);
           setGameMode("moving");
         }}

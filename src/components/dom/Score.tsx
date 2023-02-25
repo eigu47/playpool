@@ -2,6 +2,7 @@ import React from "react";
 
 import type { BALLS } from "@/constants/BALLS";
 import { type BallState, useBallsStore } from "@/utils/ballsStore";
+import { useGameStore } from "@/utils/gameStore";
 
 type Props = {
   showBalls: (typeof BALLS)[number][];
@@ -9,18 +10,21 @@ type Props = {
 
 export default function Score({ showBalls }: Props) {
   const ballsState = useBallsStore((state) => state.ballsState);
+  const gameMode = useGameStore((state) => state.gameMode);
 
   return (
     <>
-      <div className="flex select-none gap-1 rounded-xl p-1 text-center text-xs font-bold leading-[18px] text-white ring-1 ring-cyan-500">
-        {showBalls.map((ball) => (
-          <Ball
-            key={ball.id}
-            ball={ball}
-            status={ballsState[ball.id]?.status}
-          />
-        ))}
-      </div>
+      {gameMode !== "menu" && (
+        <div className="flex select-none gap-1 rounded-xl p-1 text-center text-xs font-bold leading-[18px] text-white ring-1 ring-cyan-500">
+          {showBalls.map((ball) => (
+            <BallIcon
+              key={ball.id}
+              ball={ball}
+              status={ballsState[ball.id]?.status}
+            />
+          ))}
+        </div>
+      )}
     </>
   );
 }
@@ -30,7 +34,7 @@ type BallProps = {
   status?: BallState["status"];
 };
 
-function Ball({ ball: { id, color, type }, status }: BallProps) {
+function BallIcon({ ball: { id, color, type }, status }: BallProps) {
   return (
     <>
       <div

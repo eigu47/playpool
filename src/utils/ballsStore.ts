@@ -3,6 +3,7 @@ import type { BufferGeometry, Material, Mesh, Vector3 } from "three";
 import create from "zustand";
 
 import { getInitialPositions, type BALLS } from "@/constants/BALLS";
+import { useGameStore } from "@/utils/gameStore";
 
 type BallId = (typeof BALLS)[number]["id"];
 export type BallStatus = "sleep" | "wake" | "pocket" | "out";
@@ -18,7 +19,7 @@ export type BallState = {
 type BallsStore = {
   selectedBall: BallState | null;
   ballsState: BallState[];
-  setSelectedBall: (id: BallId) => void;
+  setSelectedBall: (id: BallId | null) => void;
   addBall: <Type extends "body" | "mesh">(
     type: Type,
     ref: (Type extends "body" ? RigidBodyApi : MeshGeometry) | null,
@@ -33,6 +34,8 @@ export const useBallsStore = create<BallsStore>((set, get) => ({
   ballsState: [],
 
   setSelectedBall(id) {
+    if (id == null) return set({ selectedBall: null });
+
     set(({ ballsState }) => ({ selectedBall: ballsState[id] }));
   },
 
@@ -93,5 +96,6 @@ export const useBallsStore = create<BallsStore>((set, get) => ({
     });
 
     get().setSelectedBall(0);
+    useGameStore.getState().setResetCamera(true);
   },
 }));

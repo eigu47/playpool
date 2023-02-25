@@ -8,6 +8,7 @@ import Balls from "@/components/canvas/Balls";
 import Camera from "@/components/canvas/Camera";
 import Debugs from "@/components/canvas/Debugs";
 import PoolTable from "@/components/canvas/PoolTable";
+import { useGameStore } from "@/utils/gameStore";
 
 type Props = {
   children?: React.ReactNode;
@@ -15,9 +16,15 @@ type Props = {
 };
 
 export default function Scene({ children, handleEndTurn }: Props) {
+  const setResetCamera = useGameStore((state) => state.setResetCamera);
+
   return (
     <>
-      <Canvas camera={{ position: [0, 0, 5] }}>
+      <Canvas
+        camera={{ position: [0, 0, 5] }}
+        onMouseDown={() => setResetCamera(false)}
+        onTouchStart={() => setResetCamera(false)}
+      >
         <ambientLight />
         <pointLight position={[10, 10, 10]} intensity={0.1} />
         <color args={["hsl(210, 50%, 20%)"]} attach="background" />

@@ -11,6 +11,7 @@ import { useBallsStore } from "@/utils/ballsStore";
 import { useGameStore, type GameModes } from "@/utils/gameStore";
 
 const cameraCenter = new Vector3();
+const cameraInitialPos = new Vector3(0, 0.3882, 1.4489);
 const lineVector = new Vector3();
 const lineEndVector = new Vector3();
 
@@ -55,6 +56,7 @@ export default function Camera() {
   const gameMode = useGameStore((state) => state.gameMode);
   const setShotNormal = useGameStore((state) => state.setShotNormal);
   const selectedBall = useBallsStore((state) => state.selectedBall);
+  const resetCamera = useGameStore((state) => state.resetCamera);
 
   const cameraType = debugOn ? "debug" : gameMode;
 
@@ -85,7 +87,8 @@ export default function Camera() {
       }
     }
 
-    if (gameMode === "menu") {
+    if (resetCamera === true && gameMode !== "shot") {
+      camera.position.lerp(cameraInitialPos, delta * 4);
     }
 
     return null;
@@ -96,6 +99,9 @@ export default function Camera() {
       <OrbitControls
         ref={cameraRef}
         makeDefault
+        autoRotate={gameMode === "menu"}
+        autoRotateSpeed={-1}
+        enableRotate={gameMode !== "menu"}
         rotateSpeed={
           CAMERA_PROPS[cameraType]?.rotateSpeed ??
           CAMERA_PROPS["default"].rotateSpeed
