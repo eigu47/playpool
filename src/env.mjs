@@ -6,6 +6,10 @@ import { z } from "zod";
  */
 const server = z.object({
   NODE_ENV: z.enum(["development", "test", "production"]),
+  PUSHER_app_id: z.string(),
+  PUSHER_key: z.string(),
+  PUSHER_secret: z.string(),
+  PUSHER_cluster: z.string(),
 });
 
 /**
@@ -24,6 +28,11 @@ const client = z.object({
  */
 const processEnv = {
   NODE_ENV: process.env.NODE_ENV,
+  PUSHER_app_id: process.env.PUSHER_app_id,
+  PUSHER_key: process.env.PUSHER_key,
+  PUSHER_secret: process.env.PUSHER_secret,
+  PUSHER_cluster: process.env.PUSHER_cluster,
+
   // NEXT_PUBLIC_CLIENTVAR: process.env.NEXT_PUBLIC_CLIENTVAR,
 };
 

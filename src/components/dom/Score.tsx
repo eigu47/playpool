@@ -6,24 +6,30 @@ import { useGameStore } from "@/utils/gameStore";
 
 type Props = {
   showBalls: (typeof BALLS)[number][];
+  text?: string;
 };
 
-export default function Score({ showBalls }: Props) {
+export default function Score({ showBalls, text }: Props) {
   const ballsState = useBallsStore((state) => state.ballsState);
   const gameMode = useGameStore((state) => state.gameMode);
 
   return (
     <>
       {gameMode !== "menu" && (
-        <div className="flex select-none gap-1 rounded-xl p-1 text-center text-xs font-bold leading-[18px] text-white ring-1 ring-cyan-500">
-          {showBalls.map((ball) => (
-            <BallIcon
-              key={ball.id}
-              ball={ball}
-              status={ballsState[ball.id]?.status}
-            />
-          ))}
-        </div>
+        <>
+          <div className="flex gap-3 text-white">
+            <div className="flex select-none gap-1 rounded-xl p-1 text-center text-xs font-bold leading-[18px] ring-1 ring-cyan-500">
+              {showBalls.map((ball) => (
+                <BallIcon
+                  key={ball.id}
+                  ball={ball}
+                  status={ballsState[ball.id]?.status}
+                />
+              ))}
+            </div>
+            <p>{text}</p>
+          </div>
+        </>
       )}
     </>
   );
