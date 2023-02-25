@@ -43,6 +43,7 @@ const CAMERA_PROPS: Partial<
   },
   debug: {
     maxPolarAngle: Math.PI,
+    minDistance: 0,
   },
 } as const;
 

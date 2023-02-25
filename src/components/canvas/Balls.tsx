@@ -28,7 +28,7 @@ export default function Balls({ handleEndTurn }: Props) {
       last &&
       movement[1] > 0
     ) {
-      const force = Math.min(movement[1] / window.innerHeight, 0.5) / 1500;
+      const force = Math.min(movement[1] / window.innerHeight, 0.5) / 1800;
 
       forceVector
         .copy(useGameStore.getState().shotNormal ?? new Vector3())
@@ -45,8 +45,9 @@ export default function Balls({ handleEndTurn }: Props) {
         ball={BALLS[0]}
         position={positions[0]}
         ballGeometry={ballGeometry}
-        bind={bind}
+        handleEndTurn={handleEndTurn}
         onClick={() => setGameMode("shot")}
+        bind={bind}
         onPointerEnter={() => (document.body.style.cursor = "pointer")}
         onPointerLeave={() => (document.body.style.cursor = "default")}
       />
@@ -56,19 +57,32 @@ export default function Balls({ handleEndTurn }: Props) {
           key={ball.id}
           position={positions[ball.id]}
           ballGeometry={ballGeometry}
-          onClick={() => setGameMode("idle")}
           handleEndTurn={handleEndTurn}
+          onClick={() => setGameMode("idle")}
         />
       ))}
       <CuboidCollider
         args={[0.7, 0.1, 1.2]}
         position={[0, -0.12, 0]}
         sensor
+        name="pocket"
         onIntersectionEnter={(e) => {
           const ballId = e.other.rigidBodyObject?.name;
           if (ballId == undefined) return;
 
           setBallState("pocket", +ballId as (typeof BALLS)[number]["id"]);
+        }}
+      />
+      <CuboidCollider
+        args={[0.7, 0.22, 1.2]}
+        position={[0, 0, 0]}
+        sensor
+        name="out"
+        onIntersectionExit={(e) => {
+          const ballId = e.other.rigidBodyObject?.name;
+          if (ballId == undefined) return;
+
+          setBallState("out", +ballId as (typeof BALLS)[number]["id"]);
         }}
       />
     </>

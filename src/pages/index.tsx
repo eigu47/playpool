@@ -35,7 +35,7 @@ function IndexGUI() {
 
   return (
     <>
-      <Modal showModal={cueBallState === "pocket"}>
+      <Modal showModal={cueBallState === "pocket" || cueBallState === "out"}>
         <ResetBtn />
       </Modal>
     </>
