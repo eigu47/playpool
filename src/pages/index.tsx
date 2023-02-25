@@ -1,6 +1,7 @@
 import { type NextPage } from "next";
 import dynamic from "next/dynamic";
 
+import GUI from "@/components/dom/GUI";
 import IndexGUI from "@/components/dom/IndexGUI";
 import Score from "@/components/dom/Score";
 import { BALLS } from "@/constants/BALLS";
@@ -18,10 +19,13 @@ const Home: NextPage = () => {
   return (
     <>
       <Scene handleEndTurn={() => setGameMode("shot")} />
-      <IndexGUI />
-      <div className="fixed top-0 left-0 m-3 flex">
-        <Score showBalls={SHOW_BALLS} />
-      </div>
+
+      <GUI>
+        <IndexGUI />
+        <div className="fixed top-0 left-0 m-3 flex">
+          <Score showBalls={SHOW_BALLS} />
+        </div>
+      </GUI>
     </>
   );
 };

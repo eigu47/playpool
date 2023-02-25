@@ -68,7 +68,10 @@ export default function Balls({
           ballGeometry={ballGeometry}
           handleEndTurn={handleEndTurn}
           handleWakeBall={handleWakeBall}
-          onClick={() => setGameMode("idle")}
+          onClick={() => {
+            if (useGameStore.getState().gameMode === "shot")
+              setGameMode("idle");
+          }}
         />
       ))}
       <CuboidCollider

@@ -12,7 +12,7 @@ type Props = {
 export default function Modal({
   children,
   showModal = false,
-  duration = 1000,
+  duration = 500,
   className,
 }: Props) {
   const [modalRef] = useAutoAnimate({ duration });

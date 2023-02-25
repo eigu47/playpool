@@ -1,4 +1,3 @@
-import { useProgress } from "@react-three/drei";
 import { useRouter } from "next/router";
 
 import Button from "@/components/dom/Button";
@@ -8,7 +7,6 @@ import { useBallsStore } from "@/utils/ballsStore";
 import { useGameStore } from "@/utils/gameStore";
 
 export default function IndexGUI() {
-  const { progress } = useProgress();
   const cueBallState = useBallsStore((state) => state.ballsState[0]?.status);
   const gameMode = useGameStore((state) => state.gameMode);
 
@@ -16,9 +14,9 @@ export default function IndexGUI() {
 
   return (
     <>
-      <Modal showModal={showResetBtn || gameMode === "menu"}>
+      <Modal showModal={showResetBtn || gameMode === "menu"} duration={200}>
         {showResetBtn && <ResetBtn />}
-        {progress === 100 && gameMode === "menu" && <IndexMenu />}
+        {gameMode === "menu" && <IndexMenu />}
       </Modal>
     </>
   );

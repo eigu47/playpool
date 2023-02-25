@@ -62,7 +62,7 @@ export default function Ball({
           if (
             useBallsStore
               .getState()
-              .ballsState.every(({ status }) => status !== "wake")
+              .ballsState.some(({ status }) => status === "wake") === false
           ) {
             setGameMode("idle");
 

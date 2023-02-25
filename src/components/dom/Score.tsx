@@ -18,7 +18,7 @@ export default function Score({ showBalls, text }: Props) {
       {gameMode !== "menu" && (
         <>
           <div className="flex gap-3 text-white">
-            <div className="flex select-none gap-1 rounded-xl p-1 text-center text-xs font-bold leading-[18px] ring-1 ring-cyan-500">
+            <div className="grid select-none grid-cols-8 gap-1 rounded-xl p-1 text-center text-xs font-bold leading-[18px] ring-1 ring-cyan-500 sm:grid-flow-col">
               {showBalls.map((ball) => (
                 <BallIcon
                   key={ball.id}
@@ -41,14 +41,18 @@ type BallProps = {
 };
 
 function BallIcon({ ball: { id, color, type }, status }: BallProps) {
+  const setSelectedBall = useBallsStore((state) => state.setSelectedBall);
+
   return (
     <>
-      <div
+      <button
         className="relative h-5 w-5 rounded-full"
         style={{
           background: type === "stripe" ? "#faf3eb" : color,
           color: id === 1 || id === 9 ? "black" : "white",
         }}
+        onClick={() => setSelectedBall(id)}
+        disabled={status === "pocket"}
       >
         {type === "stripe" && (
           <div
@@ -65,7 +69,7 @@ function BallIcon({ ball: { id, color, type }, status }: BallProps) {
         {status !== "pocket" && (
           <div className="absolute left-0 top-0 h-5 w-5 rounded-full bg-black opacity-80" />
         )}
-      </div>
+      </button>
     </>
   );
 }

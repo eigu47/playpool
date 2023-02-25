@@ -36,6 +36,8 @@ export const useBallsStore = create<BallsStore>((set, get) => ({
   setSelectedBall(id) {
     if (id == null) return set({ selectedBall: null });
 
+    if (get().ballsState[id]?.status === "pocket") return;
+
     set(({ ballsState }) => ({ selectedBall: ballsState[id] }));
   },
 
