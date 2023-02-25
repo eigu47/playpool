@@ -20,11 +20,14 @@ export const useGameStore = create<GameStore>((set, get) => ({
     set({ shotNormal });
   },
 
-<<<<<<< HEAD
   setGameMode(gameMode, force = false) {
     if (force === false) {
       const prevMode = get().gameMode;
-      if (prevMode === gameMode) return;
+      if (
+        prevMode === gameMode
+        //  || prevMode === "menu"
+      )
+        return;
 
       if (gameMode === "shot") {
         if (
@@ -33,20 +36,6 @@ export const useGameStore = create<GameStore>((set, get) => ({
         )
           return;
       }
-=======
-  setGameMode(gameMode) {
-    if (gameMode === "shot") {
-      if (get().gameMode !== "idle") return;
-    }
-
-    if (gameMode === "idle") {
-      if (
-        useBallsStore
-          .getState()
-          .ballsState.every(({ status: state }) => state === "sleep") === false
-      )
-        return;
->>>>>>> 0adc09b393ba5301080217e913bf209029466dab
     }
 
     set({ gameMode });

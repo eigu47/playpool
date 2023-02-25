@@ -11,9 +11,10 @@ import PoolTable from "@/components/canvas/PoolTable";
 
 type Props = {
   children?: React.ReactNode;
+  handleEndTurn?: () => void;
 };
 
-export default function Scene({ children }: Props) {
+export default function Scene({ children, handleEndTurn }: Props) {
   return (
     <>
       <Canvas camera={{ position: [0, 0, 5] }}>
@@ -25,7 +26,7 @@ export default function Scene({ children }: Props) {
 
         <Physics>
           <PoolTable />
-          <Balls />
+          <Balls handleEndTurn={handleEndTurn} />
           <Debugs />
           {children}
         </Physics>

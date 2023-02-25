@@ -13,7 +13,11 @@ const COLOR_BALLS = BALLS.filter(({ id }) => id !== 0);
 const ballGeometry = new SphereGeometry(0.026, 16, 16);
 const forceVector = new Vector3();
 
-export default function Balls() {
+type Props = {
+  handleEndTurn?: () => void;
+};
+
+export default function Balls({ handleEndTurn }: Props) {
   const positions = getInitialPositions();
   const setGameMode = useGameStore((state) => state.setGameMode);
   const setBallState = useBallsStore((state) => state.setBallStatus);
@@ -53,7 +57,7 @@ export default function Balls() {
           position={positions[ball.id]}
           ballGeometry={ballGeometry}
           onClick={() => setGameMode("idle")}
-          handleEndTurn={() => setGameMode("shot")}
+          handleEndTurn={handleEndTurn}
         />
       ))}
       <CuboidCollider
