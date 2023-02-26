@@ -97,7 +97,6 @@ export const useBallsStore = create<BallsStore>((set, get) => ({
       return { ballsState };
     });
 
-    get().setSelectedBall(0);
     useGameStore.getState().setResetCamera(true);
   },
 }));

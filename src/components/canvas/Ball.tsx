@@ -41,56 +41,54 @@ export default function Ball({
   const addBall = useBallsStore((state) => state.addBall);
 
   return (
-    <>
-      <RigidBody
-        ref={(ref) => addBall("body", ref, ballId)}
+    <RigidBody
+      ref={(ref) => addBall("body", ref, ballId)}
+      name={ballId.toString()}
+      key={ballId}
+      colliders="ball"
+      friction={PHYSIC_CONSTANTS.BALL_FRICTION}
+      restitution={PHYSIC_CONSTANTS.BALL_RESTITUTION}
+      angularDamping={PHYSIC_CONSTANTS.DAMPING}
+      position={position}
+      rotation={[
+        Math.PI * Math.random() * 2,
+        Math.PI * Math.random() * 2,
+        Math.PI * Math.random() * 2,
+      ]}
+      onSleep={() => {
+        setBallState("sleep", ballId);
+
+        if (
+          useBallsStore
+            .getState()
+            .ballsState.some(({ status }) => status === "wake") === false
+        ) {
+          setGameMode("idle");
+
+          handleEndTurn && handleEndTurn();
+        }
+      }}
+      onWake={() => {
+        handleWakeBall && handleWakeBall(ballId);
+        setBallState("wake", ballId);
+        setGameMode("moving");
+      }}
+    >
+      <mesh
+        ref={(ref) => addBall("mesh", ref, ballId)}
         name={ballId.toString()}
         key={ballId}
-        colliders="ball"
-        friction={PHYSIC_CONSTANTS.BALL_FRICTION}
-        restitution={PHYSIC_CONSTANTS.BALL_RESTITUTION}
-        angularDamping={PHYSIC_CONSTANTS.DAMPING}
-        position={position}
-        rotation={[
-          Math.PI * Math.random() * 2,
-          Math.PI * Math.random() * 2,
-          Math.PI * Math.random() * 2,
-        ]}
-        onSleep={() => {
-          setBallState("sleep", ballId);
-
-          if (
-            useBallsStore
-              .getState()
-              .ballsState.some(({ status }) => status === "wake") === false
-          ) {
-            setGameMode("idle");
-
-            handleEndTurn && handleEndTurn();
-          }
+        geometry={ballGeometry}
+        {...(bind && (bind() as Mesh))}
+        onClick={() => {
+          setSelectedBall(ballId);
+          onClick && onClick();
         }}
-        onWake={() => {
-          handleWakeBall && handleWakeBall(ballId);
-          setBallState("wake", ballId);
-          setGameMode("moving");
-        }}
+        onPointerEnter={onPointerEnter}
+        onPointerLeave={onPointerLeave}
       >
-        <mesh
-          ref={(ref) => addBall("mesh", ref, ballId)}
-          name={ballId.toString()}
-          key={ballId}
-          geometry={ballGeometry}
-          {...(bind && (bind() as Mesh))}
-          onClick={() => {
-            setSelectedBall(ballId);
-            onClick && onClick();
-          }}
-          onPointerEnter={onPointerEnter}
-          onPointerLeave={onPointerLeave}
-        >
-          <meshStandardMaterial map={ballTexture} />
-        </mesh>
-      </RigidBody>
-    </>
+        <meshStandardMaterial map={ballTexture} />
+      </mesh>
+    </RigidBody>
   );
 }

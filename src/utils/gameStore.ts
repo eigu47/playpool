@@ -3,7 +3,7 @@ import create from "zustand";
 
 import { useBallsStore } from "@/utils/ballsStore";
 
-export type GameModes = "idle" | "shot" | "moving" | "menu";
+export type GameModes = "idle" | "shot" | "moving" | "menu" | "waiting";
 
 type GameStore = {
   shotNormal: Vector3 | null;
@@ -18,6 +18,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
   shotNormal: null,
   gameMode: "menu",
   resetCamera: false,
+  players: [],
 
   setShotNormal(shotNormal) {
     set({ shotNormal });
@@ -26,7 +27,12 @@ export const useGameStore = create<GameStore>((set, get) => ({
   setGameMode(gameMode, force = false) {
     if (force === false) {
       const prevMode = get().gameMode;
-      if (prevMode === gameMode || prevMode === "menu") return;
+      if (
+        prevMode === gameMode ||
+        prevMode === "menu" ||
+        prevMode === "waiting"
+      )
+        return;
 
       if (gameMode === "shot") {
         if (

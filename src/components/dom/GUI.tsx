@@ -27,7 +27,7 @@ export default function GUI({ children }: Props) {
           {children}
           {gameMode !== "menu" && (
             <button
-              onClick={() => setGameMode("menu")}
+              onClick={() => setGameMode("menu", true)}
               className="fixed top-0 right-0 m-2"
             >
               <SettingsIcon />
@@ -36,7 +36,7 @@ export default function GUI({ children }: Props) {
         </>
       )}
 
-      <Leva hidden={debugMode} />
+      <Leva hidden={!debugMode} />
       {debugMode && (
         <div className="fixed bottom-0 left-0 m-3 text-center text-white">
           <p>{gameMode}</p>

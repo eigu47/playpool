@@ -14,3 +14,7 @@ body,
     Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
   background: #232323;
 }
+
+button {
+  -webkit-tap-highlight-color: transparent;
+}

@@ -59,6 +59,7 @@ export default function Camera() {
   const resetCamera = useGameStore((state) => state.resetCamera);
 
   const cameraType = debugOn ? "debug" : gameMode;
+  const rotateCamera = gameMode === "menu" || gameMode === "waiting";
 
   useFrame(({ camera }, delta) => {
     if (selectedBall !== null) {
@@ -87,7 +88,7 @@ export default function Camera() {
       }
     }
 
-    if (resetCamera === true && gameMode !== "shot") {
+    if (resetCamera && !rotateCamera && gameMode !== "shot") {
       camera.position.lerp(cameraInitialPos, delta * 4);
     }
 
@@ -99,9 +100,9 @@ export default function Camera() {
       <OrbitControls
         ref={cameraRef}
         makeDefault
-        autoRotate={gameMode === "menu"}
+        autoRotate={rotateCamera}
         autoRotateSpeed={-1}
-        enableRotate={gameMode !== "menu"}
+        enableRotate={!rotateCamera}
         rotateSpeed={
           CAMERA_PROPS[cameraType]?.rotateSpeed ??
           CAMERA_PROPS["default"].rotateSpeed

@@ -1,47 +1,66 @@
-import { useRouter } from "next/router";
+import { useState } from "react";
 
 import Button from "@/components/dom/Button";
 import { ResetBtn } from "@/components/dom/Button";
 import Modal from "@/components/dom/Modal";
+import { MultiplayerForm } from "@/components/dom/MultiGUI";
+import Score from "@/components/dom/Score";
+import { BALLS } from "@/constants/BALLS";
 import { useBallsStore } from "@/utils/ballsStore";
 import { useGameStore } from "@/utils/gameStore";
+
+const SHOW_BALLS = BALLS.filter((ball) => ball.id !== 0);
 
 export default function IndexGUI() {
   const cueBallState = useBallsStore((state) => state.ballsState[0]?.status);
   const gameMode = useGameStore((state) => state.gameMode);
-
-  const showResetBtn = cueBallState === "pocket" || cueBallState === "out";
-
-  return (
-    <>
-      <Modal showModal={showResetBtn || gameMode === "menu"} duration={200}>
-        {showResetBtn && <ResetBtn />}
-        {gameMode === "menu" && <IndexMenu />}
-      </Modal>
-    </>
-  );
-}
-
-function IndexMenu() {
-  const router = useRouter();
   const setGameMode = useGameStore((state) => state.setGameMode);
   const setResetCamera = useGameStore((state) => state.setResetCamera);
 
+  const [showInput, setShowInput] = useState(false);
+
   return (
     <>
-      <div className="flex flex-col gap-6">
-        <h1 className="text-4xl font-bold text-gray-100">8 Ball Pool</h1>
-        <Button
-          onClick={() => {
-            setGameMode("idle", true);
-            setResetCamera(true);
-          }}
-          text="TRY ALONE"
-        />
-        <Button
-          onClick={() => router.push("/multiplayer")}
-          text="MULTIPLAYER (WIP)"
-        />
+      <Modal show={cueBallState === "pocket" || cueBallState === "out"}>
+        <ResetBtn />
+      </Modal>
+
+      <Modal show={gameMode === "menu"}>
+        <div className="flex w-72 flex-col gap-6">
+          {!showInput && (
+            <>
+              <Button
+                onClick={() => {
+                  setGameMode("idle", true);
+                  setResetCamera(true);
+                }}
+                text="TRY ALONE"
+              />
+              <Button
+                onClick={() => {
+                  setShowInput(true);
+                }}
+                text="MULTIPLAYER (WIP)"
+              />
+            </>
+          )}
+
+          {showInput && (
+            <>
+              <MultiplayerForm />
+              <Button
+                onClick={() => {
+                  setShowInput(false);
+                }}
+                text="BACK"
+              />
+            </>
+          )}
+        </div>
+      </Modal>
+
+      <div className="fixed top-0 left-0 m-3 flex">
+        <Score balls={SHOW_BALLS} />
       </div>
     </>
   );
