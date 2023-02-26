@@ -8,6 +8,7 @@ import Ball from "@/components/canvas/Ball";
 import { BALLS, getInitialPositions } from "@/constants/BALLS";
 import { useBallsStore } from "@/utils/ballsStore";
 import { useGameStore } from "@/utils/gameStore";
+import { useMultiplayerStore } from "@/utils/multiplayerStore";
 
 const COLOR_BALLS = BALLS.filter(({ id }) => id !== 0);
 const ballGeometry = new SphereGeometry(0.026, 16, 16);
@@ -29,6 +30,7 @@ export default function Balls({
   const setBallState = useBallsStore((state) => state.setBallStatus);
 
   const bind = useDrag(({ last, movement }) => {
+    if (useMultiplayerStore.getState().isUserTurn() != false) return;
     if (
       useGameStore.getState().gameMode === "shot" &&
       last &&
@@ -55,10 +57,19 @@ export default function Balls({
         ballGeometry={ballGeometry}
         handleEndTurn={handleEndTurn}
         handleWakeBall={handleWakeBall}
-        onClick={() => setGameMode("shot")}
+        onClick={() => {
+          if (useMultiplayerStore.getState().isUserTurn() != false) return;
+          setGameMode("shot");
+        }}
         bind={bind}
-        onPointerEnter={() => (document.body.style.cursor = "pointer")}
-        onPointerLeave={() => (document.body.style.cursor = "default")}
+        onPointerEnter={() => {
+          if (useMultiplayerStore.getState().isUserTurn() != false) return;
+          document.body.style.cursor = "pointer";
+        }}
+        onPointerLeave={() => {
+          if (useMultiplayerStore.getState().isUserTurn() != false) return;
+          document.body.style.cursor = "default";
+        }}
       />
       {COLOR_BALLS.map((ball) => (
         <Ball

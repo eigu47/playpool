@@ -18,7 +18,7 @@ export default function IndexGUI() {
   return (
     <>
       <Modal show={gameMode === "menu"}>
-        <div className="flex w-72 flex-col gap-6">
+        <div className="flex w-72 flex-col gap-12">
           {username == undefined && (
             <>
               <MultiplayerForm />
@@ -55,32 +55,34 @@ export function MultiplayerForm() {
 
   return (
     <form
-      className="flex flex-col"
+      className="flex flex-col gap-2"
       onSubmit={(e) => {
         e.preventDefault();
         if (inputName.trim() === "") return;
 
-        setUsername({ username: inputName });
+        setUsername({ username: inputName.trim().substring(0, 12) });
         setGameMode("waiting", true);
 
         if (asPath != "/multiplayer") push("/multiplayer");
       }}
     >
-      <label
-        htmlFor="user_name"
-        className="mb-2 block text-sm font-medium text-white"
-      >
+      <label htmlFor="user_name" className="text-sm font-medium text-white">
         Enter your name
       </label>
       <input
         id="user_name"
         type="text"
-        className="mb-2 block w-full rounded-lg border border-gray-600 bg-gray-700 p-2.5 text-sm text-white placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500"
+        className="w-full rounded-lg border border-gray-600 bg-gray-700 p-2.5 text-sm text-white placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500"
         required
         value={inputName}
         onChange={(e) => setInputName(e.target.value)}
+        maxLength={12}
       />
-      <Button type="submit" text="PLAY ONLINE" />
+      <Button
+        type="submit"
+        text="PLAY ONLINE"
+        disabled={inputName.trim() === ""}
+      />
     </form>
   );
 }

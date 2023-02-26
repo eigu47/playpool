@@ -16,6 +16,9 @@ export default function MultiplayerChannel({ username }: Props) {
   const setPusher = useMultiplayerStore((store) => store.setPusher);
   const addPlayer = useMultiplayerStore((store) => store.addPlayer);
   const setUserInfo = useMultiplayerStore((store) => store.setUserInfo);
+  const setTurn = useMultiplayerStore((store) => store.setTurn);
+  const setGameMode = useGameStore((store) => store.setGameMode);
+  const setResetCamera = useGameStore((store) => store.setResetCamera);
 
   const membersRef = useRef<{ id: string; username: string }[]>([]);
 
@@ -57,6 +60,8 @@ export default function MultiplayerChannel({ username }: Props) {
       channel.bind("players-ready", (users: { id: string }[]) => {
         if (gameMode !== "waiting") return;
 
+        setPusher(pusher);
+
         users.forEach(({ id }) => {
           const user = membersRef.current.find((user) => user.id === id);
           if (user) {
@@ -64,7 +69,10 @@ export default function MultiplayerChannel({ username }: Props) {
           }
         });
 
-        setPusher(pusher);
+        setTurn(0);
+        setResetCamera(true);
+
+        setGameMode("idle", true);
       });
     }
 
