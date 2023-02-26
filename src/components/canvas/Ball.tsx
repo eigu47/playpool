@@ -16,7 +16,6 @@ type Props = {
   ballGeometry: SphereGeometry;
   position: Vector3 | undefined;
   bind?: () => ReactDOMAttributes;
-  onClick?: () => void;
   onPointerEnter?: () => void;
   onPointerLeave?: () => void;
   handleEndTurn?: () => void;
@@ -28,7 +27,6 @@ export default function Ball({
   ballGeometry,
   position,
   bind,
-  onClick,
   onPointerEnter,
   onPointerLeave,
   handleEndTurn,
@@ -80,10 +78,7 @@ export default function Ball({
         key={ballId}
         geometry={ballGeometry}
         {...(bind && (bind() as Mesh))}
-        onClick={() => {
-          setSelectedBall(ballId);
-          onClick && onClick();
-        }}
+        onClick={() => setSelectedBall(ballId, true)}
         onPointerEnter={onPointerEnter}
         onPointerLeave={onPointerLeave}
       >

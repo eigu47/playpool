@@ -26,7 +26,6 @@ export default function Balls({
   handleWakeBall,
 }: Props) {
   const positions = getInitialPositions();
-  const setGameMode = useGameStore((state) => state.setGameMode);
   const setBallState = useBallsStore((state) => state.setBallStatus);
 
   const bind = useDrag(({ last, movement }) => {
@@ -57,10 +56,6 @@ export default function Balls({
         ballGeometry={ballGeometry}
         handleEndTurn={handleEndTurn}
         handleWakeBall={handleWakeBall}
-        onClick={() => {
-          if (useMultiplayerStore.getState().isUserTurn() != false) return;
-          setGameMode("shot");
-        }}
         bind={bind}
         onPointerEnter={() => {
           if (useMultiplayerStore.getState().isUserTurn() != false) return;
@@ -79,10 +74,6 @@ export default function Balls({
           ballGeometry={ballGeometry}
           handleEndTurn={handleEndTurn}
           handleWakeBall={handleWakeBall}
-          onClick={() => {
-            if (useGameStore.getState().gameMode === "shot")
-              setGameMode("idle");
-          }}
         />
       ))}
       <CuboidCollider

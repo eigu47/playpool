@@ -3,6 +3,7 @@ import React from "react";
 import { Loader, Preload } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
 import { Physics } from "@react-three/rapier";
+import type { Vector3 } from "three";
 
 import Balls from "@/components/canvas/Balls";
 import Camera from "@/components/canvas/Camera";
@@ -13,9 +14,16 @@ import { useGameStore } from "@/utils/gameStore";
 type Props = {
   children?: React.ReactNode;
   handleEndTurn?: () => void;
+  handleWakeBall?: (ballId: number) => void;
+  handleEndShot?: (forceVector: Vector3) => void;
 };
 
-export default function Scene({ children, handleEndTurn }: Props) {
+export default function Scene({
+  children,
+  handleEndTurn,
+  handleWakeBall,
+  handleEndShot,
+}: Props) {
   const setResetCamera = useGameStore((state) => state.setResetCamera);
 
   return (
@@ -33,7 +41,11 @@ export default function Scene({ children, handleEndTurn }: Props) {
 
         <Physics>
           <PoolTable />
-          <Balls handleEndTurn={handleEndTurn} />
+          <Balls
+            handleEndTurn={handleEndTurn}
+            handleWakeBall={handleWakeBall}
+            handleEndShot={handleEndShot}
+          />
           <Debugs />
           {children}
         </Physics>

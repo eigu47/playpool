@@ -43,8 +43,6 @@ type BallProps = {
 
 function BallIcon({ ball: { id, color, type }, status }: BallProps) {
   const setSelectedBall = useBallsStore((state) => state.setSelectedBall);
-  const gameMode = useGameStore((state) => state.gameMode);
-  const setGameMode = useGameStore((state) => state.setGameMode);
 
   return (
     <button
@@ -53,10 +51,7 @@ function BallIcon({ ball: { id, color, type }, status }: BallProps) {
         background: type === "stripe" ? "#faf3eb" : color,
         color: id === 1 || id === 9 ? "black" : "white",
       }}
-      onClick={() => {
-        setSelectedBall(id);
-        if (gameMode === "shot") setGameMode("idle");
-      }}
+      onClick={() => setSelectedBall(id, true)}
       disabled={status === "pocket"}
     >
       {type === "stripe" && (
