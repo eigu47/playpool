@@ -13,18 +13,6 @@ import type { GLTF } from "three-stdlib";
 
 import { PHYSIC_CONSTANTS } from "@/constants/PHYSICS";
 
-type GLTFResult = GLTF & {
-  nodes: {
-    Object_2: THREE.Mesh;
-    Object_2001: THREE.Mesh;
-    Object_2002: THREE.Mesh;
-    Object_2003: THREE.Mesh;
-  };
-  materials: {
-    None: THREE.MeshStandardMaterial;
-  };
-};
-
 export default function Model(props: JSX.IntrinsicElements["group"]) {
   const { nodes, materials } = useGLTF(
     "/pool_table.glb"
@@ -64,3 +52,15 @@ export default function Model(props: JSX.IntrinsicElements["group"]) {
 }
 
 useGLTF.preload("/pool_table.glb");
+
+type GLTFResult = GLTF & {
+  nodes: {
+    Object_2: THREE.Mesh;
+    Object_2001: THREE.Mesh;
+    Object_2002: THREE.Mesh;
+    Object_2003: THREE.Mesh;
+  };
+  materials: {
+    None: THREE.MeshStandardMaterial;
+  };
+};

@@ -3,11 +3,6 @@ import Pusher from "pusher";
 
 import { env } from "@/env.mjs";
 
-export type Message = {
-  message: string;
-  username: string;
-};
-
 export const pusher = new Pusher({
   appId: env.PUSHER_app_id,
   key: env.PUSHER_key,
@@ -22,10 +17,15 @@ export default async function handler(
 ) {
   const { message, username } = req.body;
 
-  await pusher.trigger("presence-channel", "message", {
+  await pusher.trigger("presence-cache-channel", "message", {
     message,
     username,
   } as Message);
 
   res.status(200);
 }
+
+export type Message = {
+  message: string;
+  username: string;
+};

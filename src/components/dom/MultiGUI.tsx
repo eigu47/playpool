@@ -3,7 +3,7 @@ import { useState } from "react";
 import { useRouter } from "next/router";
 
 import Button from "@/components/dom/Button";
-import Channels from "@/components/dom/Channels";
+import Channel from "@/components/dom/Channel";
 import Modal from "@/components/dom/Modal";
 import { useGameStore } from "@/utils/gameStore";
 import { useMultiplayerStore } from "@/utils/multiplayerStore";
@@ -41,7 +41,7 @@ export default function IndexGUI() {
         </div>
       </Modal>
 
-      {username != undefined && <Channels username={username} />}
+      {username != undefined && <Channel username={username} />}
     </>
   );
 }
@@ -49,7 +49,7 @@ export default function IndexGUI() {
 export function MultiplayerForm() {
   const { push, asPath } = useRouter();
   const setGameMode = useGameStore((state) => state.setGameMode);
-  const setUsername = useMultiplayerStore((state) => state.setUserInfo);
+  const setUserInfo = useMultiplayerStore((state) => state.setUserInfo);
 
   const [inputName, setInputName] = useState("");
 
@@ -60,7 +60,7 @@ export function MultiplayerForm() {
         e.preventDefault();
         if (inputName.trim() === "") return;
 
-        setUsername({ username: inputName.trim().substring(0, 12) });
+        setUserInfo({ username: inputName.trim().substring(0, 12) });
         setGameMode("waiting", true);
 
         if (asPath != "/multiplayer") push("/multiplayer");

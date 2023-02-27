@@ -14,15 +14,6 @@ const cameraCenter = new Vector3();
 const cameraInitialPos = new Vector3(0, 0.3882, 1.4489);
 const lineVector = new Vector3();
 const lineEndVector = new Vector3();
-
-type Line2Props = Object3DNode<Line2, typeof Line2> & {
-  setPoints: (
-    start: Vector3 | [number, number, number],
-    end: Vector3 | [number, number, number],
-    mid: Vector3 | [number, number, number]
-  ) => void;
-};
-
 const CAMERA_PROPS: Partial<
   Record<GameModes | "debug", Partial<OrbitControlsImpl>>
 > &
@@ -130,3 +121,11 @@ export default function Camera() {
     </>
   );
 }
+
+type Line2Props = Object3DNode<Line2, typeof Line2> & {
+  setPoints: (
+    start: Vector3 | [number, number, number],
+    end: Vector3 | [number, number, number],
+    mid: Vector3 | [number, number, number]
+  ) => void;
+};

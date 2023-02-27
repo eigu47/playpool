@@ -10,7 +10,6 @@ import { useGameStore } from "@/utils/gameStore";
 const Scene = dynamic(() => import("@/components/canvas/Scene"), {
   ssr: false,
 });
-
 const SHOW_BALLS = BALLS.filter((ball) => ball.id !== 0);
 
 const Home: NextPage = () => {

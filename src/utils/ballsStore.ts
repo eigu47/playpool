@@ -10,13 +10,6 @@ type BallId = (typeof BALLS)[number]["id"];
 export type BallStatus = "sleep" | "wake" | "pocket" | "out";
 export type MeshGeometry = Mesh<BufferGeometry, Material | Material[]>;
 
-export type BallState = {
-  id: BallId;
-  status: BallStatus;
-  body?: RigidBodyApi;
-  mesh?: MeshGeometry;
-};
-
 type BallsStore = {
   selectedBall: BallState | null;
   ballsState: BallState[];
@@ -112,3 +105,10 @@ export const useBallsStore = create<BallsStore>((set, get) => ({
     useGameStore.getState().setResetCamera(true);
   },
 }));
+
+export type BallState = {
+  id: BallId;
+  status: BallStatus;
+  body?: RigidBodyApi;
+  mesh?: MeshGeometry;
+};

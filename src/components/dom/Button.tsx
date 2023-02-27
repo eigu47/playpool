@@ -1,5 +1,3 @@
-import { useBallsStore } from "@/utils/ballsStore";
-
 type Props = {
   text: string;
   onClick?: () => void;
