@@ -11,18 +11,18 @@ const STRIPE_BALLS = [
 ];
 
 export default function MultiScore() {
-  const playerNames = useMultiplayerStore((state) =>
-    state.playersInfo.flatMap(({ username }) => username)
-  );
+  const playersInfo = useMultiplayerStore((state) => state.playersInfo);
   const username = useMultiplayerStore((state) => state.userInfo?.username);
   const playerTurn = useMultiplayerStore((state) => state.playerTurn);
 
   function getText(player: 0 | 1): string | null {
-    if (playerNames.length < 2) return null;
+    if (playersInfo.length < 2) return null;
 
-    const text = playerNames[player];
+    const text = playersInfo[player]?.username;
     if (text == undefined) return null;
 
+    if (playersInfo[player]?.connected === false)
+      return `${text} (disconnected)`;
     if (playerTurn === player) return `${text}'s turn`;
 
     return text;

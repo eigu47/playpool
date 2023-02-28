@@ -4,8 +4,8 @@ type MultiplayerStore = {
   userInfo: UserInfo | null;
   playersInfo: PlayerInfo[];
   playerTurn: 0 | 1 | null;
-  setUserInfo: (user: UserInfo) => void;
-  addPlayer: (user: Required<UserInfo>) => void;
+  setUserInfo: ({ id, username, isPlaying }: Partial<UserInfo>) => void;
+  addPlayer: (id: string, username: string) => void;
   setTurn: (playerOrSwap: 0 | 1 | "swap") => void;
   isUserTurn: () => boolean;
   updatePlayer: (
@@ -19,15 +19,21 @@ export const useMultiplayerStore = create<MultiplayerStore>((set, get) => ({
   playersInfo: [],
   playerTurn: null,
 
-  setUserInfo({ id, username }) {
-    set({ userInfo: { id, username } });
+  setUserInfo({
+    id = get().userInfo?.id,
+    username = get().userInfo?.username,
+    isPlaying = false,
+  }) {
+    if (username == undefined) return;
+
+    set({ userInfo: { id, username, isPlaying } });
   },
 
-  addPlayer({ id, username }) {
+  addPlayer(id, username) {
     set(({ playersInfo }) => ({
       playersInfo: [
-        ...playersInfo,
         { id, username, connected: true, ballType: null },
+        ...playersInfo,
       ],
     }));
   },
@@ -80,6 +86,7 @@ export const useMultiplayerStore = create<MultiplayerStore>((set, get) => ({
 type UserInfo = {
   id?: string;
   username: string;
+  isPlaying: boolean;
 };
 
 export type PlayerBallType = "stripe" | "solid" | null;

@@ -1,5 +1,6 @@
 import type { RigidBodyApi } from "@react-three/rapier";
-import type { BufferGeometry, Material, Mesh, Vector3 } from "three";
+import type { BufferGeometry, Material, Mesh } from "three";
+import { Vector3 } from "three";
 import create from "zustand";
 
 import { getInitialPositions, type BALLS } from "@/constants/BALLS";
@@ -15,12 +16,13 @@ type BallsStore = {
   ballsState: BallState[];
   setSelectedBall: (id: BallId | null, checkShot?: boolean) => void;
   addBall: <Type extends "body" | "mesh">(
-    type: Type,
-    ref: (Type extends "body" ? RigidBodyApi : MeshGeometry) | null,
-    id: BallId
+    ...args: Type extends "body"
+      ? [type: Type, body: RigidBodyApi | null, id: BallId]
+      : [type: Type, mesh: MeshGeometry | null, id: BallId]
   ) => void;
   setBallStatus: (status: BallStatus, id: BallId, force?: boolean) => void;
   resetPositions: (positions?: Vector3[]) => void;
+  getBallsPositions: () => Vector3[];
 };
 
 export const useBallsStore = create<BallsStore>((set, get) => ({
@@ -36,7 +38,7 @@ export const useBallsStore = create<BallsStore>((set, get) => ({
 
     if (checkShot === true) {
       if (id === 0) {
-        if (useMultiplayerStore.getState().isUserTurn() != false) return;
+        if (useMultiplayerStore.getState().isUserTurn() !== true) return;
         useGameStore.getState().setGameMode("shot");
         return;
       }
@@ -103,6 +105,12 @@ export const useBallsStore = create<BallsStore>((set, get) => ({
     });
 
     useGameStore.getState().setResetCamera(true);
+  },
+
+  getBallsPositions() {
+    return get().ballsState.map(
+      ({ mesh }) => mesh?.getWorldPosition(new Vector3()) ?? new Vector3()
+    );
   },
 }));
 

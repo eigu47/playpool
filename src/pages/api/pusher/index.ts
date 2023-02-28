@@ -1,5 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import Pusher from "pusher";
+import type { Vector3 } from "three";
 
 import { env } from "@/env.mjs";
 
@@ -11,29 +12,30 @@ export const pusher = new Pusher({
   useTLS: true,
 });
 
-// export const pusher = new Pusher({
-//   appId: process.env.PUSHER_app_id!,
-//   key: process.env.PUSHER_key!,
-//   secret: process.env.PUSHER_secret!,
-//   cluster: process.env.PUSHER_cluster!,
-//   useTLS: true,
-// });
-
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-  const { message, username } = req.body;
+  const { forceVector, userId, positions } = req.body;
+  if (userId == undefined) return res.status(400);
 
-  await pusher.trigger("presence-cache-channel", "message", {
-    message,
-    username,
-  } as Message);
+  if (forceVector != undefined)
+    await pusher.trigger("presence-channel", "shot", {
+      forceVector,
+      userId,
+    } satisfies ShotInfo);
 
+  if (positions != undefined) {
+    await pusher.trigger("presence-channel", "end-turn", {
+      positions,
+      userId,
+    } satisfies ShotInfo);
+  }
   res.status(200);
 }
 
-export type Message = {
-  message: string;
-  username: string;
+export type ShotInfo = {
+  userId: string;
+  forceVector?: Vector3;
+  positions?: Vector3[];
 };

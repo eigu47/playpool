@@ -55,6 +55,11 @@ export default async function handler(
         positions: getInitialPositions(),
       } satisfies GameData);
     }
+
+    pusher.trigger("precense-cache-channel", "game-data", {
+      players: null,
+      positions: null,
+    } satisfies GameData);
   } catch (e) {
     console.error(e);
   }

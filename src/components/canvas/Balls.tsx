@@ -29,7 +29,7 @@ export default function Balls({
   const setBallState = useBallsStore((state) => state.setBallStatus);
 
   const bind = useDrag(({ last, movement }) => {
-    if (useMultiplayerStore.getState().isUserTurn() != false) return;
+    if (useMultiplayerStore.getState().isUserTurn() !== true) return;
     if (
       useGameStore.getState().gameMode === "shot" &&
       last &&
@@ -42,9 +42,8 @@ export default function Balls({
         .multiplyScalar(force)
         .setY(0);
 
-      useBallsStore.getState().ballsState[0]?.body?.applyImpulse(forceVector);
-
       handleEndShot && handleEndShot(forceVector);
+      useBallsStore.getState().ballsState[0]?.body?.applyImpulse(forceVector);
     }
   });
 
@@ -58,11 +57,11 @@ export default function Balls({
         handleWakeBall={handleWakeBall}
         bind={bind}
         onPointerEnter={() => {
-          if (useMultiplayerStore.getState().isUserTurn() != false) return;
+          if (useMultiplayerStore.getState().isUserTurn() !== true) return;
           document.body.style.cursor = "pointer";
         }}
         onPointerLeave={() => {
-          if (useMultiplayerStore.getState().isUserTurn() != false) return;
+          if (useMultiplayerStore.getState().isUserTurn() !== true) return;
           document.body.style.cursor = "default";
         }}
       />
