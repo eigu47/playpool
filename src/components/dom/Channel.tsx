@@ -48,7 +48,15 @@ export default function Channel({ username }: Props) {
       setUserInfo({ id: members.me.id, username: members.me.info.username });
     });
 
+    cacheChannel.bind("pusher:member_added", (member: Member) => {
+      membersRef.current.push({
+        id: member.id,
+        username: member.info.username,
+      });
+    });
+
     cacheChannel.bind("game-data", ({ players, positions }: GameData) => {
+      console.log(players, positions);
       if (players == null || positions == null) return;
 
       players.forEach(({ id }) => {
@@ -65,13 +73,6 @@ export default function Channel({ username }: Props) {
 
       setGameMode("idle", true);
     });
-
-    // cacheChannel.bind("pusher:member_added", (member: Member) => {
-    //   membersRef.current.push({
-    //     id: member.id,
-    //     username: member.info.username,
-    //   });
-    // });
 
     // cacheChannel.bind("pusher:member_removed", (member: Member) => {
     //   //
