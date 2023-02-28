@@ -3,11 +3,19 @@ import Pusher from "pusher";
 
 import { env } from "@/env.mjs";
 
+// export const pusher = new Pusher({
+//   appId: env.PUSHER_app_id,
+//   key: env.PUSHER_key,
+//   secret: env.PUSHER_secret,
+//   cluster: env.PUSHER_cluster,
+//   useTLS: true,
+// });
+
 export const pusher = new Pusher({
-  appId: env.PUSHER_app_id,
-  key: env.PUSHER_key,
-  secret: env.PUSHER_secret,
-  cluster: env.PUSHER_cluster,
+  appId: process.env.PUSHER_app_id!,
+  key: process.env.PUSHER_key!,
+  secret: process.env.PUSHER_secret!,
+  cluster: process.env.PUSHER_cluster!,
   useTLS: true,
 });
 
