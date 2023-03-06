@@ -3,9 +3,12 @@ import type { BufferGeometry, Material, Mesh } from "three";
 import { Vector3 } from "three";
 import create from "zustand";
 
-import { getInitialPositions, type BALLS } from "@/constants/BALLS";
+import type { BALLS } from "@/constants/BALLS";
+import { getInitialPositions } from "@/constants/BALLS";
 import { useGameStore } from "@/utils/gameStore";
 import { useMultiplayerStore } from "@/utils/multiplayerStore";
+
+const ZeroVector3 = new Vector3(0, 0, 0);
 
 type BallId = (typeof BALLS)[number]["id"];
 export type BallStatus = "sleep" | "wake" | "pocket" | "out";
@@ -38,7 +41,11 @@ export const useBallsStore = create<BallsStore>((set, get) => ({
 
     if (checkShot === true) {
       if (id === 0) {
-        if (useMultiplayerStore.getState().isUserTurn() !== true) return;
+        if (
+          useMultiplayerStore.getState().userInfo?.username != undefined &&
+          useMultiplayerStore.getState().isUserTurn() !== true
+        )
+          return;
         useGameStore.getState().setGameMode("shot");
         return;
       }
@@ -96,8 +103,8 @@ export const useBallsStore = create<BallsStore>((set, get) => ({
         const position = positions[index];
         if (state.body == undefined || position == undefined) return;
 
-        state.body.setLinvel({ x: 0, y: 0, z: 0 });
-        state.body.setAngvel({ x: 0, y: 0, z: 0 });
+        state.body.setLinvel(ZeroVector3);
+        state.body.setAngvel(ZeroVector3);
         state.body.setTranslation(position);
         state.status = "wake";
       });
@@ -108,9 +115,10 @@ export const useBallsStore = create<BallsStore>((set, get) => ({
   },
 
   getBallsPositions() {
-    return get().ballsState.map(
-      ({ mesh }) => mesh?.getWorldPosition(new Vector3()) ?? new Vector3()
-    );
+    return get().ballsState.map(({ body }) => {
+      const pos = body?.raw().translation();
+      return pos ? new Vector3(pos.x, pos.y, pos.z) : new Vector3();
+    });
   },
 }));
 

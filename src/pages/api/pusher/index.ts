@@ -16,22 +16,27 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-  const { forceVector, userId, positions } = req.body;
-  if (userId == undefined) return res.status(400);
+  try {
+    const { forceVector, userId, positions } = req.body;
+    if (userId == undefined) return res.status(400);
 
-  if (forceVector != undefined)
-    await pusher.trigger("presence-channel", "shot", {
-      forceVector,
-      userId,
-    } satisfies ShotInfo);
+    if (forceVector != undefined)
+      await pusher.trigger("presence-channel", "shot", {
+        forceVector,
+        userId,
+      } satisfies ShotInfo);
 
-  if (positions != undefined) {
-    await pusher.trigger("presence-channel", "end-turn", {
-      positions,
-      userId,
-    } satisfies ShotInfo);
+    if (positions != undefined) {
+      await pusher.trigger("presence-channel", "end-turn", {
+        positions,
+        userId,
+      } satisfies ShotInfo);
+    }
+
+    res.status(200).send("OK");
+  } catch (e) {
+    console.error(e);
   }
-  res.status(200);
 }
 
 export type ShotInfo = {

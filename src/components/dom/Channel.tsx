@@ -1,5 +1,6 @@
 import { useEffect, useRef } from "react";
 
+import { useThree } from "@react-three/fiber";
 import Pusher, { type Members } from "pusher-js";
 import type { Vector3 } from "three";
 
@@ -87,14 +88,10 @@ export default function Channel({ username }: Props) {
       }
     });
 
-    messageChannel.bind(
-      "shot",
-      ({ forceVector, userId }: { forceVector: Vector3; userId: string }) => {
-        if (useMultiplayerStore.getState().isUserTurn() === true) return;
-
-        useBallsStore.getState().ballsState[0]?.body?.applyImpulse(forceVector);
-      }
-    );
+    messageChannel.bind("shot", ({ forceVector, userId }: ShotInfo) => {
+      if (useMultiplayerStore.getState().isUserTurn() === true) return;
+      useBallsStore.getState().ballsState[0]?.body?.applyImpulse(forceVector!);
+    });
 
     messageChannel.bind("end-turn", ({ positions, userId }: ShotInfo) => {
       if (useMultiplayerStore.getState().isUserTurn() === false) {

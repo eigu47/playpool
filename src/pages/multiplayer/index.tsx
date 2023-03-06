@@ -31,9 +31,11 @@ const Home: NextPage = () => {
 
   async function handleEndTurn() {
     const userId = useMultiplayerStore.getState().userInfo?.id;
-    if (userId == undefined) return;
-
-    const positions = getBallsPositions();
+    if (
+      userId == undefined ||
+      useMultiplayerStore.getState().isUserTurn() === false
+    )
+      return;
 
     fetch("/api/pusher", {
       method: "POST",
@@ -41,7 +43,10 @@ const Home: NextPage = () => {
         Accept: "application/json",
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ userId, positions }),
+      body: JSON.stringify({
+        userId,
+        positions: getBallsPositions(),
+      }),
     });
   }
 
