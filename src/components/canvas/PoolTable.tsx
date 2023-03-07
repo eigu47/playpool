@@ -7,7 +7,7 @@ Command: npx gltfjsx@6.0.9 D:/udemy/playpool/public/untitled.glb -t
 import React from "react";
 
 import { Center, useGLTF } from "@react-three/drei";
-import { RigidBody } from "@react-three/rapier";
+import { RigidBody, useRapier } from "@react-three/rapier";
 import type * as THREE from "three";
 import type { GLTF } from "three-stdlib";
 
@@ -17,6 +17,9 @@ export default function Model(props: JSX.IntrinsicElements["group"]) {
   const { nodes, materials } = useGLTF(
     "/pool_table.glb"
   ) as unknown as GLTFResult;
+
+  const rapier = useRapier();
+  rapier.world.raw().integrationParameters.predictionDistance = 0.008;
 
   return (
     <>

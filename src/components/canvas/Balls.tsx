@@ -13,6 +13,7 @@ import { useMultiplayerStore } from "@/utils/multiplayerStore";
 const COLOR_BALLS = BALLS.filter(({ id }) => id !== 0);
 const ballGeometry = new SphereGeometry(0.026, 16, 16);
 const forceVector = new Vector3();
+const positions = getInitialPositions();
 
 type Props = {
   handleEndTurn?: () => void;
@@ -25,28 +26,25 @@ export default function Balls({
   handleEndShot,
   handleWakeBall,
 }: Props) {
-  const positions = getInitialPositions();
   const setBallState = useBallsStore((state) => state.setBallStatus);
+  const isUserTurn = useMultiplayerStore((state) => state.isUserTurn);
 
   const bind = useDrag(({ last, movement }) => {
-    if (
-      useMultiplayerStore.getState().userInfo?.username != undefined &&
-      useMultiplayerStore.getState().isUserTurn() !== true
-    )
-      return;
+    if (handleEndTurn && !isUserTurn()) return;
+
     if (
       useGameStore.getState().gameMode === "shot" &&
       last &&
       movement[1] > 0
     ) {
-      const force = Math.min(movement[1] / window.innerHeight, 0.5) / 1800;
+      const force = Math.min(movement[1] / window.innerHeight, 0.5) / 1500;
 
       forceVector
         .copy(useGameStore.getState().shotNormal ?? new Vector3())
         .multiplyScalar(force)
         .setY(0);
 
-      // console.log(forceVector);
+      // console.log(forceVector)
 
       handleEndShot && handleEndShot(forceVector);
       useBallsStore.getState().ballsState[0]?.body?.applyImpulse(forceVector);
@@ -63,19 +61,13 @@ export default function Balls({
         handleWakeBall={handleWakeBall}
         bind={bind}
         onPointerEnter={() => {
-          if (
-            useMultiplayerStore.getState().userInfo?.username != undefined &&
-            useMultiplayerStore.getState().isUserTurn() !== true
-          )
-            return;
+          if (handleEndTurn && !isUserTurn()) return;
+
           document.body.style.cursor = "pointer";
         }}
         onPointerLeave={() => {
-          if (
-            useMultiplayerStore.getState().userInfo?.username != undefined &&
-            useMultiplayerStore.getState().isUserTurn() !== true
-          )
-            return;
+          if (handleEndTurn && !isUserTurn()) return;
+
           document.body.style.cursor = "default";
         }}
       />

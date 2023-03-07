@@ -103,10 +103,10 @@ export const useBallsStore = create<BallsStore>((set, get) => ({
         const position = positions[index];
         if (state.body == undefined || position == undefined) return;
 
-        state.body.setLinvel(ZeroVector3);
-        state.body.setAngvel(ZeroVector3);
-        state.body.setTranslation(position);
-        state.status = "wake";
+        state.body.setLinvel(ZeroVector3, false);
+        state.body.setAngvel(ZeroVector3, false);
+        state.body.setTranslation(position, false);
+        state.status = "sleep";
       });
       return { ballsState };
     });
