@@ -26,7 +26,7 @@ export default function Scene({
   handleEndShot,
 }: Props) {
   const setResetCamera = useGameStore((state) => state.setResetCamera);
-  const hideDummyScene = useMultiplayerStore((state) => state.hideDummyScene);
+  // const hideDummyScene = useMultiplayerStore((state) => state.hideDummyScene);
 
   return (
     <>
@@ -34,8 +34,8 @@ export default function Scene({
         camera={{ position: [0, 0, 5] }}
         onMouseDown={() => setResetCamera(false)}
         onTouchStart={() => setResetCamera(false)}
-        hidden={!hideDummyScene}
-        frameloop="demand"
+        // hidden={!hideDummyScene}
+        // frameloop="demand"
       >
         <ambientLight />
         <pointLight position={[10, 10, 10]} intensity={0.1} />

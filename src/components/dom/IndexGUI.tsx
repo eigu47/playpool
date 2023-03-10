@@ -11,7 +11,9 @@ import { useGameStore } from "@/utils/gameStore";
 const SHOW_BALLS = BALLS.filter((ball) => ball.id !== 0);
 
 export default function IndexGUI() {
-  const cueBallState = useBallsStore((state) => state.ballsState[0]?.status);
+  const cueBallStatus = useBallsStore(
+    (state) => state.ballsBody[0]?.userData?.status
+  );
   const gameMode = useGameStore((state) => state.gameMode);
   const setGameMode = useGameStore((state) => state.setGameMode);
   const setResetCamera = useGameStore((state) => state.setResetCamera);
@@ -22,7 +24,7 @@ export default function IndexGUI() {
 
   return (
     <>
-      <Modal show={cueBallState === "pocket" || cueBallState === "out"}>
+      <Modal show={cueBallStatus !== "play"}>
         <Button
           onClick={() => {
             resetPositions();

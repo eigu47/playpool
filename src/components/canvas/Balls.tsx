@@ -1,12 +1,11 @@
 import React from "react";
 
-import { CuboidCollider } from "@react-three/rapier";
 import { useDrag } from "@use-gesture/react";
 import { SphereGeometry, Vector3 } from "three";
 
 import Ball from "@/components/canvas/Ball";
 import { BALLS, getInitialPositions } from "@/constants/BALLS";
-import { useBallsStore, type BallId } from "@/utils/ballsStore";
+import { useBallsStore } from "@/utils/ballsStore";
 import { useGameStore } from "@/utils/gameStore";
 import { useMultiplayerStore } from "@/utils/multiplayerStore";
 
@@ -26,7 +25,6 @@ export default function Balls({
   handleEndShot,
   handleWakeBall,
 }: Props) {
-  const setBallState = useBallsStore((state) => state.setBallStatus);
   const isUserTurn = useMultiplayerStore((state) => state.isUserTurn);
 
   const bind = useDrag(({ last, movement }) => {
@@ -45,7 +43,7 @@ export default function Balls({
         .setY(0);
 
       handleEndShot && handleEndShot(forceVector);
-      useBallsStore.getState().ballsState[0]?.body?.applyImpulse(forceVector);
+      useBallsStore.getState().ballsBody[0]?.applyImpulse(forceVector, true);
     }
   });
 
@@ -79,30 +77,6 @@ export default function Balls({
           handleWakeBall={handleWakeBall}
         />
       ))}
-      <CuboidCollider
-        args={[0.7, 0.1, 1.2]}
-        position={[0, -0.12, 0]}
-        sensor
-        name="pocket"
-        onIntersectionEnter={(e) => {
-          const ballId = e.other.rigidBodyObject?.name;
-          if (ballId == undefined) return;
-
-          setBallState("pocket", +ballId as BallId);
-        }}
-      />
-      <CuboidCollider
-        args={[0.7, 0.22, 1.2]}
-        position={[0, 0, 0]}
-        sensor
-        name="out"
-        onIntersectionExit={(e) => {
-          const ballId = e.other.rigidBodyObject?.name;
-          if (ballId == undefined) return;
-
-          setBallState("out", +ballId as BallId);
-        }}
-      />
     </>
   );
 }

@@ -16,26 +16,21 @@ const Home: NextPage = () => {
   const getBallsPositions = useBallsStore((state) => state.getBallsPositions);
 
   async function handleEndShot(forceVector: Vector3) {
-    const userId = useMultiplayerStore.getState().userInfo?.id;
-    if (userId == undefined) return;
-
     fetch("/api/pusher", {
       method: "POST",
       headers: {
         Accept: "application/json",
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ forceVector, userId }),
+      body: JSON.stringify({
+        forceVector,
+        userId: useMultiplayerStore.getState().userInfo?.id,
+      }),
     });
   }
 
   async function handleEndTurn() {
-    const userId = useMultiplayerStore.getState().userInfo?.id;
-    if (
-      userId == undefined ||
-      useMultiplayerStore.getState().isUserTurn() === false
-    )
-      return;
+    if (useMultiplayerStore.getState().isUserTurn() === false) return;
 
     fetch("/api/pusher", {
       method: "POST",
@@ -44,8 +39,8 @@ const Home: NextPage = () => {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        userId,
         positions: getBallsPositions(),
+        userId: useMultiplayerStore.getState().userInfo?.id,
       }),
     });
   }

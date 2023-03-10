@@ -1,14 +1,14 @@
-import type { RigidBodyApi } from "@react-three/rapier";
+import type { RapierRigidBody } from "@react-three/rapier";
 import create from "zustand";
 
-import type { BallId, BallState, MeshGeometry } from "@/utils/ballsStore";
+import type { BallId, RigidBodyData } from "@/utils/ballsStore";
 
 type MultiplayerStore = {
   userInfo: UserInfo | null;
   playersInfo: PlayerInfo[];
   playerTurn: 0 | 1 | null;
   hideDummyScene: boolean;
-  dummyBallsState: BallState[];
+  dummyBalls: RigidBodyData[];
   setUserInfo: ({ id, username, isPlaying }: Partial<UserInfo>) => void;
   addPlayer: (id: string, username: string) => void;
   setTurn: (playerOrSwap: 0 | 1 | "swap") => void;
@@ -17,12 +17,7 @@ type MultiplayerStore = {
     id: string,
     ballTypeOrConnection: PlayerBallType | boolean
   ) => void;
-  addDummyBall: <Type extends "body" | "mesh">(
-    ...args: Type extends "body"
-      ? [type: Type, body: RigidBodyApi | null, id: BallId]
-      : [type: Type, mesh: MeshGeometry | null, id: BallId]
-  ) => void;
-  setHideDummyScene: (hide: boolean) => void;
+  addDummyBall: (body: RapierRigidBody | null, id: BallId) => void;
 };
 
 export const useMultiplayerStore = create<MultiplayerStore>((set, get) => ({
@@ -30,7 +25,7 @@ export const useMultiplayerStore = create<MultiplayerStore>((set, get) => ({
   playersInfo: [],
   playerTurn: null,
   hideDummyScene: true,
-  dummyBallsState: [],
+  dummyBalls: [],
 
   setUserInfo({
     id = get().userInfo?.id,
@@ -95,24 +90,14 @@ export const useMultiplayerStore = create<MultiplayerStore>((set, get) => ({
     }));
   },
 
-  addDummyBall(type, ref, id) {
-    if (ref == null) return;
+  addDummyBall(body, id) {
+    if (body == null) return;
 
     set((state) => {
-      const dummyBallsState = [...state.dummyBallsState];
-
-      dummyBallsState[id] = {
-        ...dummyBallsState[id],
-        id,
-        status: "sleep",
-        [type]: ref,
-      };
-      return { dummyBallsState };
+      const dummyBalls = [...state.dummyBalls];
+      dummyBalls[id] = body as RigidBodyData;
+      return { dummyBalls };
     });
-  },
-
-  setHideDummyScene(hide) {
-    set({ hideDummyScene: hide });
   },
 }));
 

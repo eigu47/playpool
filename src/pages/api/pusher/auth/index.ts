@@ -42,11 +42,7 @@ export default async function handler(
     const user0Id = users?.users[0]?.id;
     const user1Id = users?.users[1]?.id;
 
-    if (
-      users.users.length === 2 &&
-      user0Id != undefined &&
-      user1Id != undefined
-    ) {
+    if (users.users.length === 2 && user0Id && user1Id) {
       pusher.trigger("presence-cache-channel", "game-data", {
         players: [
           { id: user0Id, connected: true, ballType: null },

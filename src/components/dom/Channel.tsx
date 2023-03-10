@@ -63,7 +63,7 @@ export default function Channel({ username }: Props) {
       if (players == null || positions == null) return;
 
       // User is already playing
-      if (useMultiplayerStore.getState().userInfo?.isPlaying === true) {
+      if (useMultiplayerStore.getState().userInfo?.isPlaying) {
         //
         return;
       }
@@ -89,16 +89,20 @@ export default function Channel({ username }: Props) {
     });
 
     messageChannel.bind("shot", ({ forceVector, userId }: ShotInfo) => {
-      if (useMultiplayerStore.getState().isUserTurn() === true) return;
-      useBallsStore.getState().ballsState[0]?.body?.applyImpulse(forceVector!);
+      if (useMultiplayerStore.getState().isUserTurn() || forceVector == null)
+        return;
+      useBallsStore.getState().ballsBody[0]?.applyImpulse(forceVector, true);
     });
 
     messageChannel.bind("end-turn", ({ positions, userId }: ShotInfo) => {
-      if (useMultiplayerStore.getState().isUserTurn() === false) {
+      if (
+        useMultiplayerStore.getState().isUserTurn() &&
+        positions != undefined
+      ) {
         useBallsStore.getState().resetPositions(positions);
       }
 
-      useMultiplayerStore.getState().setTurn("swap");
+      // useMultiplayerStore.getState().setTurn("swap");
     });
 
     return () => {

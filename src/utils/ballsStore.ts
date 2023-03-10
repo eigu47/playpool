@@ -1,4 +1,4 @@
-import type { RigidBodyApi } from "@react-three/rapier";
+import { type RapierRigidBody, vec3 } from "@react-three/rapier";
 import type { BufferGeometry, Material, Mesh } from "three";
 import { Vector3 } from "three";
 import create from "zustand";
@@ -10,19 +10,18 @@ import { useMultiplayerStore } from "@/utils/multiplayerStore";
 
 const ZeroVector3 = new Vector3(0, 0, 0);
 
-export type BallId = (typeof BALLS)[number]["id"];
-export type BallStatus = "sleep" | "wake" | "pocket" | "out";
+export type BallId = typeof BALLS[number]["id"];
+export type BallStatus = "play" | "pocket" | "out";
+export type RigidBodyData = RapierRigidBody & {
+  userData: { id: BallId; status: BallStatus };
+};
 export type MeshGeometry = Mesh<BufferGeometry, Material | Material[]>;
 
 type BallsStore = {
-  selectedBall: BallState | null;
-  ballsState: BallState[];
+  selectedBall: RigidBodyData | null;
+  ballsBody: RigidBodyData[];
   setSelectedBall: (id: BallId | null, focus?: boolean) => void;
-  addBall: <Type extends "body" | "mesh">(
-    ...args: Type extends "body"
-      ? [type: Type, body: RigidBodyApi | null, id: BallId]
-      : [type: Type, mesh: MeshGeometry | null, id: BallId]
-  ) => void;
+  addBody: (body: RapierRigidBody | null, id: BallId) => void;
   setBallStatus: (status: BallStatus, id: BallId, force?: boolean) => void;
   resetPositions: (positions?: Vector3[]) => void;
   getBallsPositions: () => Vector3[];
@@ -31,18 +30,19 @@ type BallsStore = {
 export const useBallsStore = create<BallsStore>((set, get) => ({
   selectedBall: null,
   ballsState: [],
+  ballsBody: [],
 
   setSelectedBall(id, focus = false) {
     if (id == null) return set({ selectedBall: null });
 
-    if (get().ballsState[id]?.status === "pocket") return;
+    if (get().ballsBody[id]?.userData?.status !== "play") return;
 
-    set(({ ballsState }) => ({ selectedBall: ballsState[id] }));
+    set(({ ballsBody }) => ({ selectedBall: ballsBody[id] }));
 
     if (focus === true && id === 0) {
       if (
-        useMultiplayerStore.getState().userInfo?.username != undefined &&
-        useMultiplayerStore.getState().isUserTurn() !== true
+        useMultiplayerStore.getState().userInfo?.username &&
+        useMultiplayerStore.getState().isUserTurn() === false
       )
         return;
       useGameStore.getState().setGameMode("shot");
@@ -53,76 +53,49 @@ export const useBallsStore = create<BallsStore>((set, get) => ({
       useGameStore.getState().setGameMode("idle");
   },
 
-  addBall(type, ref, id) {
-    if (ref == null) return;
+  addBody(body, id) {
+    if (body == null) return;
 
     set((state) => {
-      const ballsState = [...state.ballsState];
-
-      ballsState[id] = {
-        ...ballsState[id],
-        id,
-        status: "sleep",
-        [type]: ref,
-      };
-      return { ballsState };
+      const ballsBody = [...state.ballsBody];
+      ballsBody[id] = body as RigidBodyData;
+      return { ballsBody };
     });
   },
 
   setBallStatus(status, id, force = false) {
-    const ballState = get().ballsState[id];
-
-    if (force === false) {
-      if (
-        ballState == undefined ||
-        ballState.status === "pocket" ||
-        ballState.status === "out"
-      )
-        return;
-    }
+    if (force === false && get().ballsBody[id]?.userData.status !== "play")
+      return;
 
     set((state) => {
-      const ballsState = [...state.ballsState];
+      const ballsBody = [...state.ballsBody];
+      const ballBody = ballsBody[id];
+      if (ballBody) ballBody.userData.status = status;
 
-      ballsState[id] = {
-        ...ballsState[id],
-        id,
-        status,
-      };
-      return { ballsState };
+      return { ballsBody };
     });
   },
 
   resetPositions(positions = getInitialPositions()) {
     set((state) => {
-      const ballsState = [...state.ballsState];
+      const ballsBody = [...state.ballsBody];
 
-      ballsState.forEach((state, index) => {
+      ballsBody.forEach((body, index) => {
         const position = positions[index];
-        if (state.body == undefined || position == undefined) return;
+        if (body == undefined || position == undefined) return;
 
-        state.body.setLinvel(ZeroVector3, false);
-        state.body.setAngvel(ZeroVector3, false);
-        state.body.setTranslation(position, false);
-        state.status = "sleep";
+        body.setLinvel(ZeroVector3, false);
+        body.setAngvel(ZeroVector3, false);
+        body.setTranslation(position, false);
+        body.userData.status = "play";
       });
-      return { ballsState };
+      return { ballsBody };
     });
 
     useGameStore.getState().setResetCamera(true);
   },
 
   getBallsPositions() {
-    return get().ballsState.map(({ body }) => {
-      const pos = body?.raw().translation();
-      return pos ? new Vector3(pos.x, pos.y, pos.z) : new Vector3();
-    });
+    return get().ballsBody.map((body) => vec3(body?.translation()));
   },
 }));
-
-export type BallState = {
-  id: BallId;
-  status: BallStatus;
-  body?: RigidBodyApi;
-  mesh?: MeshGeometry;
-};

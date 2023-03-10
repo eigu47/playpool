@@ -44,27 +44,24 @@ export default function GUI({ children }: Props) {
       {debugMode && (
         <div className="fixed bottom-0 left-0 m-3 text-center text-white">
           <p
-            onClick={() =>
-              // useBallsStore.getState().ballsState[0]?.body?.applyImpulse({
-              //   x: 0.00000843215486675366,
-              //   y: 0,
-              //   z: -0.00026817707080990045,
-              // })
-              useMultiplayerStore.setState({
-                hideDummyScene: true,
-              })
-            }
+          // onClick={() =>
+          // useBallsStore.getState().ballsState[0]?.body?.applyImpulse({
+          //   x: 0.00000843215486675366,
+          //   y: 0,
+          //   z: -0.00026817707080990045,
+          // })
+          // }
           >
             {gameMode}
           </p>
           <Button
             onClick={() => {
-              // resetPositions();
-              // setSelectedBall(0);
+              resetPositions();
+              setSelectedBall(0);
               // console.log(useBallsStore.getState().getBallsPositions());
-              useMultiplayerStore.setState({
-                hideDummyScene: !useMultiplayerStore.getState().hideDummyScene,
-              });
+              // useMultiplayerStore.setState({
+              //   hideDummyScene: !useMultiplayerStore.getState().hideDummyScene,
+              // });
             }}
             text="RESET"
           />

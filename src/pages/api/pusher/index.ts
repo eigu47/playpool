@@ -20,13 +20,13 @@ export default async function handler(
     const { forceVector, userId, positions } = req.body;
     if (userId == undefined) return res.status(400);
 
-    if (forceVector != undefined)
+    if (forceVector)
       await pusher.trigger("presence-channel", "shot", {
         forceVector,
         userId,
       } satisfies ShotInfo);
 
-    if (positions != undefined) {
+    if (positions) {
       await pusher.trigger("presence-channel", "end-turn", {
         positions,
         userId,

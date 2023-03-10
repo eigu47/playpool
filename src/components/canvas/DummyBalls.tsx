@@ -2,11 +2,10 @@ import React from "react";
 
 import { useTexture } from "@react-three/drei";
 import { useFrame } from "@react-three/fiber";
-import { CuboidCollider, RigidBody } from "@react-three/rapier";
+import { RigidBody } from "@react-three/rapier";
 import { SphereGeometry } from "three";
 
 import { BALLS, getInitialPositions } from "@/constants/BALLS";
-import { type BallId, useBallsStore } from "@/utils/ballsStore";
 import { useMultiplayerStore } from "@/utils/multiplayerStore";
 
 const ballGeometry = new SphereGeometry(0.026, 16, 16);
@@ -31,7 +30,6 @@ export default function Balls() {
     "/balls/14.jpg",
     "/balls/15.jpg",
   ]);
-  const setBallState = useBallsStore((state) => state.setBallStatus);
   const addDummyBall = useMultiplayerStore((state) => state.addDummyBall);
 
   useFrame(({ clock }) => {
@@ -43,7 +41,7 @@ export default function Balls() {
       {BALLS.map(({ id }) => (
         <>
           <RigidBody
-            ref={(ref) => addDummyBall("body", ref, id)}
+            ref={(ref) => addDummyBall(ref, id)}
             key={id}
             colliders="ball"
             position={positions[id]}
@@ -56,7 +54,7 @@ export default function Balls() {
               if (
                 useMultiplayerStore
                   .getState()
-                  .dummyBallsState.every(({ body }) => body?.raw().isSleeping)
+                  .dummyBalls.every((body) => body?.isSleeping())
               ) {
                 useMultiplayerStore.setState({ hideDummyScene: true });
               }
@@ -68,30 +66,6 @@ export default function Balls() {
           </RigidBody>
         </>
       ))}
-      <CuboidCollider
-        args={[0.7, 0.1, 1.2]}
-        position={[0, -0.12, 0]}
-        sensor
-        name="pocket"
-        onIntersectionEnter={(e) => {
-          const ballId = e.other.rigidBodyObject?.name;
-          if (ballId == undefined) return;
-
-          setBallState("pocket", +ballId as BallId);
-        }}
-      />
-      <CuboidCollider
-        args={[0.7, 0.22, 1.2]}
-        position={[0, 0, 0]}
-        sensor
-        name="out"
-        onIntersectionExit={(e) => {
-          const ballId = e.other.rigidBodyObject?.name;
-          if (ballId == undefined) return;
-
-          setBallState("out", +ballId as BallId);
-        }}
-      />
     </>
   );
 }

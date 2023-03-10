@@ -2,6 +2,7 @@ import React, { useRef } from "react";
 
 import { OrbitControls, QuadraticBezierLine } from "@react-three/drei";
 import { type Object3DNode, useFrame } from "@react-three/fiber";
+import { vec3 } from "@react-three/rapier";
 import { useControls } from "leva";
 import { Vector3 } from "three";
 import { type Line2 } from "three-stdlib";
@@ -10,7 +11,7 @@ import type { OrbitControls as OrbitControlsImpl } from "three-stdlib";
 import { useBallsStore } from "@/utils/ballsStore";
 import { useGameStore, type GameModes } from "@/utils/gameStore";
 
-const cameraCenter = new Vector3();
+// const cameraCenter = new Vector3();
 const cameraInitialPos = new Vector3(0, 0.3882, 1.4489);
 const lineVector = new Vector3();
 const lineEndVector = new Vector3();
@@ -53,8 +54,8 @@ export default function Camera() {
   const rotateCamera = gameMode === "menu" || gameMode === "waiting";
 
   useFrame(({ camera }, delta) => {
-    if (selectedBall !== null) {
-      selectedBall.mesh?.getWorldPosition(cameraCenter);
+    if (selectedBall) {
+      const cameraCenter = vec3(selectedBall?.translation());
       cameraRef.current?.target.lerp(cameraCenter, delta * 4);
 
       if (gameMode === "shot") {
@@ -114,7 +115,6 @@ export default function Camera() {
           CAMERA_PROPS[cameraType]?.minPolarAngle ??
           CAMERA_PROPS["default"].minPolarAngle
         }
-        target={[0, 0, 0]}
       />
 
       <QuadraticBezierLine ref={lineRef} start={[0, 0, 0]} end={[0, 0, 0]} />

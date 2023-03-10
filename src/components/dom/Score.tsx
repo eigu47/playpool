@@ -1,18 +1,19 @@
 import React from "react";
 
 import type { BALLS } from "@/constants/BALLS";
-import { type BallState, useBallsStore } from "@/utils/ballsStore";
+import type { BallStatus } from "@/utils/ballsStore";
+import { useBallsStore } from "@/utils/ballsStore";
 import { useGameStore } from "@/utils/gameStore";
 
 type Props = {
-  balls: (typeof BALLS)[number][];
+  balls: typeof BALLS[number][];
   text?: string;
   show?: boolean;
 };
 
 export default function Score({ balls, text, show = false }: Props) {
-  const ballsState = useBallsStore((state) =>
-    state.ballsState.flatMap(({ status }) => status)
+  const ballsStatus = useBallsStore((state) =>
+    state.ballsBody.flatMap((body) => body?.userData?.status)
   );
   const gameMode = useGameStore((state) => state.gameMode);
 
@@ -25,7 +26,7 @@ export default function Score({ balls, text, show = false }: Props) {
               <BallIcon
                 key={ball.id}
                 ball={ball}
-                status={ballsState[ball.id]}
+                status={ballsStatus[ball.id]}
               />
             ))}
           </div>
@@ -37,8 +38,8 @@ export default function Score({ balls, text, show = false }: Props) {
 }
 
 type BallProps = {
-  ball: (typeof BALLS)[number];
-  status?: BallState["status"];
+  ball: typeof BALLS[number];
+  status?: BallStatus;
 };
 
 function BallIcon({ ball: { id, color, type }, status }: BallProps) {

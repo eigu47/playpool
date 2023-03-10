@@ -7,23 +7,26 @@ Command: npx gltfjsx@6.0.9 D:/udemy/playpool/public/untitled.glb -t
 import React from "react";
 
 import { Center, useGLTF } from "@react-three/drei";
-import { RigidBody, useRapier } from "@react-three/rapier";
+import { CuboidCollider, RigidBody, useRapier } from "@react-three/rapier";
 import type * as THREE from "three";
 import type { GLTF } from "three-stdlib";
 
 import { PHYSIC_CONSTANTS } from "@/constants/PHYSICS";
+import type { BallId } from "@/utils/ballsStore";
+import { useBallsStore } from "@/utils/ballsStore";
 
 export default function Model(props: JSX.IntrinsicElements["group"]) {
   const { nodes, materials } = useGLTF(
     "/pool_table.glb"
   ) as unknown as GLTFResult;
 
+  const setBallStatus = useBallsStore((state) => state.setBallStatus);
   const rapier = useRapier();
-  rapier.world.raw().integrationParameters.predictionDistance = 0.008;
+  rapier.world.raw().integrationParameters.predictionDistance = 0.01;
 
   return (
     <>
-      <Center position-y={-0.5} {...props}>
+      <Center getObjectsByProperty={undefined} position-y={-0.5} {...props}>
         <RigidBody
           type="fixed"
           colliders="trimesh"
@@ -42,6 +45,32 @@ export default function Model(props: JSX.IntrinsicElements["group"]) {
           </group>
         </RigidBody>
       </Center>
+
+      <CuboidCollider
+        args={[0.7, 0.1, 1.2]}
+        position={[0, -0.12, 0]}
+        sensor
+        name="pocket"
+        onIntersectionEnter={(e) => {
+          const ballId = e.other.rigidBodyObject?.userData.id;
+          if (typeof ballId !== "number") return;
+
+          setBallStatus("pocket", ballId as BallId);
+        }}
+      />
+      <CuboidCollider
+        args={[0.7, 0.22, 1.2]}
+        position={[0, 0, 0]}
+        sensor
+        name="out"
+        onIntersectionExit={(e) => {
+          const ballId = e.other.rigidBodyObject?.userData.id;
+          if (typeof ballId !== "number") return;
+
+          setBallStatus("out", ballId as BallId);
+        }}
+      />
+
       {/* <mesh
         rotation={[-Math.PI / 2, 0, -Math.PI / 2]}
         dispose={null}

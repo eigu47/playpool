@@ -5,6 +5,7 @@ import { useRouter } from "next/router";
 import Button from "@/components/dom/Button";
 import Channel from "@/components/dom/Channel";
 import Modal from "@/components/dom/Modal";
+import { useBallsStore } from "@/utils/ballsStore";
 import { useGameStore } from "@/utils/gameStore";
 import { useMultiplayerStore } from "@/utils/multiplayerStore";
 
@@ -25,7 +26,7 @@ export default function IndexGUI() {
               <Button onClick={() => push("/")} text="PLAY ALONE" />
             </>
           )}
-          {username != undefined && (
+          {username && (
             <Button
               type="submit"
               text="BACK TO GAME"
@@ -41,7 +42,7 @@ export default function IndexGUI() {
         </div>
       </Modal>
 
-      {username != undefined && <Channel username={username} />}
+      {username && <Channel username={username} />}
     </>
   );
 }
@@ -50,6 +51,7 @@ export function MultiplayerForm() {
   const { push, asPath } = useRouter();
   const setGameMode = useGameStore((state) => state.setGameMode);
   const setUserInfo = useMultiplayerStore((state) => state.setUserInfo);
+  const setSelectedBall = useBallsStore((state) => state.setSelectedBall);
 
   const [inputName, setInputName] = useState("");
 
@@ -62,6 +64,7 @@ export function MultiplayerForm() {
 
         setUserInfo({ username: inputName.trim().substring(0, 12) });
         setGameMode("waiting", true);
+        setSelectedBall(null);
 
         if (asPath != "/multiplayer") push("/multiplayer");
       }}

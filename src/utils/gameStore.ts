@@ -35,7 +35,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
       if (gameMode === "shot") {
         if (
           prevMode !== "idle" ||
-          useBallsStore.getState().selectedBall?.id !== 0
+          useBallsStore.getState().selectedBall?.userData.id !== 0
         )
           return;
       }

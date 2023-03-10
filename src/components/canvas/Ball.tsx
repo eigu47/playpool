@@ -12,7 +12,7 @@ import { useBallsStore } from "@/utils/ballsStore";
 import { useGameStore } from "@/utils/gameStore";
 
 type Props = {
-  ball: (typeof BALLS)[number];
+  ball: typeof BALLS[number];
   ballGeometry: SphereGeometry;
   position: Vector3 | undefined;
   bind?: () => ReactDOMAttributes;
@@ -35,12 +35,12 @@ export default function Ball({
   const ballTexture = useTexture(`/balls/${ballId}.jpg`);
   const setGameMode = useGameStore((state) => state.setGameMode);
   const setSelectedBall = useBallsStore((state) => state.setSelectedBall);
-  const setBallState = useBallsStore((state) => state.setBallStatus);
-  const addBall = useBallsStore((state) => state.addBall);
+  const addBody = useBallsStore((state) => state.addBody);
 
   return (
     <RigidBody
-      ref={(ref) => addBall("body", ref, ballId)}
+      ref={(ref) => addBody(ref, ballId)}
+      userData={{ id: ballId, status: "play" }}
       name={ballId.toString()}
       key={ballId}
       colliders="ball"
@@ -54,28 +54,30 @@ export default function Ball({
         Math.PI * Math.random() * 2,
       ]}
       onSleep={() => {
-        setBallState("sleep", ballId);
         if (
           useGameStore.getState().gameMode === "moving" &&
           useBallsStore
             .getState()
-            .ballsState.every(({ status }) => status !== "wake")
+            .ballsBody.every(
+              (ball) =>
+                ball?.isSleeping() === true || ball?.userData.status !== "play"
+            )
         ) {
           setGameMode("idle");
-
           handleEndTurn && handleEndTurn();
         }
       }}
       onWake={() => {
-        handleWakeBall && handleWakeBall(ballId);
-        setBallState("wake", ballId);
-        setGameMode("moving");
+        if (
+          useBallsStore.getState().ballsBody[ballId]?.userData.status === "play"
+        ) {
+          setGameMode("moving");
+          handleWakeBall && handleWakeBall(ballId);
+        }
       }}
     >
       <mesh
-        ref={(ref) => addBall("mesh", ref, ballId)}
         name={ballId.toString()}
-        key={ballId}
         geometry={ballGeometry}
         {...(bind && (bind() as Mesh))}
         onClick={() => setSelectedBall(ballId, true)}
