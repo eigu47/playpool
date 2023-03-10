@@ -11,7 +11,7 @@ import type { OrbitControls as OrbitControlsImpl } from "three-stdlib";
 import { useBallsStore } from "@/utils/ballsStore";
 import { useGameStore, type GameModes } from "@/utils/gameStore";
 
-// const cameraCenter = new Vector3();
+const cameraCenter = new Vector3();
 const cameraInitialPos = new Vector3(0, 0.3882, 1.4489);
 const lineVector = new Vector3();
 const lineEndVector = new Vector3();
@@ -55,7 +55,7 @@ export default function Camera() {
 
   useFrame(({ camera }, delta) => {
     if (selectedBall) {
-      const cameraCenter = vec3(selectedBall?.translation());
+      cameraCenter.copy(vec3(selectedBall.translation()));
       cameraRef.current?.target.lerp(cameraCenter, delta * 4);
 
       if (gameMode === "shot") {

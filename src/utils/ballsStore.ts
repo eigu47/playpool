@@ -1,7 +1,6 @@
 import { type RapierRigidBody, vec3 } from "@react-three/rapier";
-import type { BufferGeometry, Material, Mesh } from "three";
 import { Vector3 } from "three";
-import create from "zustand";
+import { create } from "zustand";
 
 import type { BALLS } from "@/constants/BALLS";
 import { getInitialPositions } from "@/constants/BALLS";
@@ -15,7 +14,6 @@ export type BallStatus = "play" | "pocket" | "out";
 export type RigidBodyData = RapierRigidBody & {
   userData: { id: BallId; status: BallStatus };
 };
-export type MeshGeometry = Mesh<BufferGeometry, Material | Material[]>;
 
 type BallsStore = {
   selectedBall: RigidBodyData | null;

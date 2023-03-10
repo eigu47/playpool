@@ -3,8 +3,8 @@ import dynamic from "next/dynamic";
 import type { Vector3 } from "three";
 
 import GUI from "@/components/dom/GUI";
-import MultiGUI from "@/components/dom/MultiGUI";
-import MultiScore from "@/components/dom/MultiScore";
+import MultiplayerGUI from "@/components/dom/MultiplayerGUI";
+import MultiplayerScore from "@/components/dom/MultiplayerScore";
 import { useBallsStore } from "@/utils/ballsStore";
 import { useMultiplayerStore } from "@/utils/multiplayerStore";
 
@@ -50,8 +50,8 @@ const Home: NextPage = () => {
       <Scene handleEndTurn={handleEndTurn} handleEndShot={handleEndShot} />
 
       <GUI>
-        <MultiGUI />
-        <MultiScore />
+        <MultiplayerGUI />
+        <MultiplayerScore />
       </GUI>
     </>
   );

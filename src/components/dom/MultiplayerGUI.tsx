@@ -9,7 +9,7 @@ import { useBallsStore } from "@/utils/ballsStore";
 import { useGameStore } from "@/utils/gameStore";
 import { useMultiplayerStore } from "@/utils/multiplayerStore";
 
-export default function IndexGUI() {
+export default function MultiplayerGUI() {
   const { push } = useRouter();
   const gameMode = useGameStore((state) => state.gameMode);
   const username = useMultiplayerStore((state) => state.userInfo?.username);

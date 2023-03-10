@@ -1,5 +1,5 @@
 import type { Vector3 } from "three";
-import create from "zustand";
+import { create } from "zustand";
 
 import { useBallsStore } from "@/utils/ballsStore";
 

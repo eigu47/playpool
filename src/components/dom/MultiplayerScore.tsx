@@ -10,7 +10,7 @@ const STRIPE_BALLS = [
   BALLS[8],
 ];
 
-export default function MultiScore() {
+export default function MultiplayerScore() {
   const playersInfo = useMultiplayerStore((state) => state.playersInfo);
   const username = useMultiplayerStore((state) => state.userInfo?.username);
   const playerTurn = useMultiplayerStore((state) => state.playerTurn);

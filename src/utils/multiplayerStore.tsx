@@ -1,5 +1,5 @@
 import type { RapierRigidBody } from "@react-three/rapier";
-import create from "zustand";
+import { create } from "zustand";
 
 import type { BallId, RigidBodyData } from "@/utils/ballsStore";
 

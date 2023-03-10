@@ -2,7 +2,7 @@ import { useState } from "react";
 
 import Button from "@/components/dom/Button";
 import Modal from "@/components/dom/Modal";
-import { MultiplayerForm } from "@/components/dom/MultiGUI";
+import { MultiplayerForm } from "@/components/dom/MultiplayerGUI";
 import Score from "@/components/dom/Score";
 import { BALLS } from "@/constants/BALLS";
 import { useBallsStore } from "@/utils/ballsStore";
