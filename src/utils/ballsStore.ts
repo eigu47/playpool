@@ -10,14 +10,14 @@ import { useMultiplayerStore } from "@/utils/multiplayerStore";
 
 const ZeroVector3 = new Vector3(0, 0, 0);
 
-type BallId = (typeof BALLS)[number]["id"];
+export type BallId = (typeof BALLS)[number]["id"];
 export type BallStatus = "sleep" | "wake" | "pocket" | "out";
 export type MeshGeometry = Mesh<BufferGeometry, Material | Material[]>;
 
 type BallsStore = {
   selectedBall: BallState | null;
   ballsState: BallState[];
-  setSelectedBall: (id: BallId | null, checkShot?: boolean) => void;
+  setSelectedBall: (id: BallId | null, focus?: boolean) => void;
   addBall: <Type extends "body" | "mesh">(
     ...args: Type extends "body"
       ? [type: Type, body: RigidBodyApi | null, id: BallId]
@@ -32,27 +32,25 @@ export const useBallsStore = create<BallsStore>((set, get) => ({
   selectedBall: null,
   ballsState: [],
 
-  setSelectedBall(id, checkShot = false) {
+  setSelectedBall(id, focus = false) {
     if (id == null) return set({ selectedBall: null });
 
     if (get().ballsState[id]?.status === "pocket") return;
 
     set(({ ballsState }) => ({ selectedBall: ballsState[id] }));
 
-    if (checkShot === true) {
-      if (id === 0) {
-        if (
-          useMultiplayerStore.getState().userInfo?.username != undefined &&
-          useMultiplayerStore.getState().isUserTurn() !== true
-        )
-          return;
-        useGameStore.getState().setGameMode("shot");
+    if (focus === true && id === 0) {
+      if (
+        useMultiplayerStore.getState().userInfo?.username != undefined &&
+        useMultiplayerStore.getState().isUserTurn() !== true
+      )
         return;
-      }
-
-      if (useGameStore.getState().gameMode === "shot")
-        useGameStore.getState().setGameMode("idle");
+      useGameStore.getState().setGameMode("shot");
+      return;
     }
+
+    if (useGameStore.getState().gameMode === "shot")
+      useGameStore.getState().setGameMode("idle");
   },
 
   addBall(type, ref, id) {

@@ -12,13 +12,17 @@ const Scene = dynamic(() => import("@/components/canvas/Scene"), {
 });
 const SHOW_BALLS = BALLS.filter((ball) => ball.id !== 0);
 
+const DummyScene = dynamic(() => import("@/components/canvas/DummyScene"), {
+  ssr: false,
+});
+
 const Home: NextPage = () => {
   const setGameMode = useGameStore((state) => state.setGameMode);
 
   return (
     <>
       <Scene handleEndTurn={() => setGameMode("shot")} />
-
+      <DummyScene />
       <GUI>
         <IndexGUI />
         <div className="fixed top-0 left-0 m-3 flex">

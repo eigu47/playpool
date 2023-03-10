@@ -51,7 +51,7 @@ function BallIcon({ ball: { id, color, type }, status }: BallProps) {
         background: type === "stripe" ? "#faf3eb" : color,
         color: id === 1 || id === 9 ? "black" : "white",
       }}
-      onClick={() => setSelectedBall(id, true)}
+      onClick={() => setSelectedBall(id)}
       disabled={status === "pocket"}
     >
       {type === "stripe" && (

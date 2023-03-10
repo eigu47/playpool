@@ -1,9 +1,14 @@
+import type { RigidBodyApi } from "@react-three/rapier";
 import create from "zustand";
+
+import type { BallId, BallState, MeshGeometry } from "@/utils/ballsStore";
 
 type MultiplayerStore = {
   userInfo: UserInfo | null;
   playersInfo: PlayerInfo[];
   playerTurn: 0 | 1 | null;
+  hideDummyScene: boolean;
+  dummyBallsState: BallState[];
   setUserInfo: ({ id, username, isPlaying }: Partial<UserInfo>) => void;
   addPlayer: (id: string, username: string) => void;
   setTurn: (playerOrSwap: 0 | 1 | "swap") => void;
@@ -12,12 +17,20 @@ type MultiplayerStore = {
     id: string,
     ballTypeOrConnection: PlayerBallType | boolean
   ) => void;
+  addDummyBall: <Type extends "body" | "mesh">(
+    ...args: Type extends "body"
+      ? [type: Type, body: RigidBodyApi | null, id: BallId]
+      : [type: Type, mesh: MeshGeometry | null, id: BallId]
+  ) => void;
+  setHideDummyScene: (hide: boolean) => void;
 };
 
 export const useMultiplayerStore = create<MultiplayerStore>((set, get) => ({
   userInfo: null,
   playersInfo: [],
   playerTurn: null,
+  hideDummyScene: true,
+  dummyBallsState: [],
 
   setUserInfo({
     id = get().userInfo?.id,
@@ -80,6 +93,26 @@ export const useMultiplayerStore = create<MultiplayerStore>((set, get) => ({
           : player
       ),
     }));
+  },
+
+  addDummyBall(type, ref, id) {
+    if (ref == null) return;
+
+    set((state) => {
+      const dummyBallsState = [...state.dummyBallsState];
+
+      dummyBallsState[id] = {
+        ...dummyBallsState[id],
+        id,
+        status: "sleep",
+        [type]: ref,
+      };
+      return { dummyBallsState };
+    });
+  },
+
+  setHideDummyScene(hide) {
+    set({ hideDummyScene: hide });
   },
 }));
 

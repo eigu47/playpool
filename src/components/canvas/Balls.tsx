@@ -6,7 +6,7 @@ import { SphereGeometry, Vector3 } from "three";
 
 import Ball from "@/components/canvas/Ball";
 import { BALLS, getInitialPositions } from "@/constants/BALLS";
-import { useBallsStore } from "@/utils/ballsStore";
+import { useBallsStore, type BallId } from "@/utils/ballsStore";
 import { useGameStore } from "@/utils/gameStore";
 import { useMultiplayerStore } from "@/utils/multiplayerStore";
 
@@ -30,7 +30,7 @@ export default function Balls({
   const isUserTurn = useMultiplayerStore((state) => state.isUserTurn);
 
   const bind = useDrag(({ last, movement }) => {
-    if (handleEndTurn && !isUserTurn()) return;
+    if (handleEndShot && !isUserTurn()) return;
 
     if (
       useGameStore.getState().gameMode === "shot" &&
@@ -43,8 +43,6 @@ export default function Balls({
         .copy(useGameStore.getState().shotNormal ?? new Vector3())
         .multiplyScalar(force)
         .setY(0);
-
-      // console.log(forceVector)
 
       handleEndShot && handleEndShot(forceVector);
       useBallsStore.getState().ballsState[0]?.body?.applyImpulse(forceVector);
@@ -61,12 +59,12 @@ export default function Balls({
         handleWakeBall={handleWakeBall}
         bind={bind}
         onPointerEnter={() => {
-          if (handleEndTurn && !isUserTurn()) return;
+          if (handleEndShot && !isUserTurn()) return;
 
           document.body.style.cursor = "pointer";
         }}
         onPointerLeave={() => {
-          if (handleEndTurn && !isUserTurn()) return;
+          if (handleEndShot && !isUserTurn()) return;
 
           document.body.style.cursor = "default";
         }}
@@ -90,7 +88,7 @@ export default function Balls({
           const ballId = e.other.rigidBodyObject?.name;
           if (ballId == undefined) return;
 
-          setBallState("pocket", +ballId as (typeof BALLS)[number]["id"]);
+          setBallState("pocket", +ballId as BallId);
         }}
       />
       <CuboidCollider
@@ -102,7 +100,7 @@ export default function Balls({
           const ballId = e.other.rigidBodyObject?.name;
           if (ballId == undefined) return;
 
-          setBallState("out", +ballId as (typeof BALLS)[number]["id"]);
+          setBallState("out", +ballId as BallId);
         }}
       />
     </>

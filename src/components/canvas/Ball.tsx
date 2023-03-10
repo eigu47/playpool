@@ -55,11 +55,11 @@ export default function Ball({
       ]}
       onSleep={() => {
         setBallState("sleep", ballId);
-
         if (
+          useGameStore.getState().gameMode === "moving" &&
           useBallsStore
             .getState()
-            .ballsState.some(({ status }) => status === "wake") === false
+            .ballsState.every(({ status }) => status !== "wake")
         ) {
           setGameMode("idle");
 
