@@ -11,11 +11,7 @@ import type { OrbitControls as OrbitControlsImpl } from "three-stdlib";
 import { useBallsStore } from "@/utils/ballsStore";
 import { useGameStore, type GameModes } from "@/utils/gameStore";
 
-const cameraCenter = new Vector3();
-const cameraInitialPos = new Vector3(0, 0.3882, 1.4489);
-const lineVector = new Vector3();
-const lineEndVector = new Vector3();
-const CAMERA_PROPS: Partial<
+export const CAMERA_PROPS: Partial<
   Record<GameModes | "debug", Partial<OrbitControlsImpl>>
 > &
   Record<"default", Partial<OrbitControlsImpl>> = {
@@ -39,6 +35,18 @@ const CAMERA_PROPS: Partial<
     minDistance: 0,
   },
 } as const;
+type Line2Props = Object3DNode<Line2, typeof Line2> & {
+  setPoints: (
+    start: Vector3 | [number, number, number],
+    end: Vector3 | [number, number, number],
+    mid: Vector3 | [number, number, number]
+  ) => void;
+};
+
+const cameraCenter = new Vector3();
+const cameraInitialPos = new Vector3(0, 0.3882, 1.4489);
+const lineVector = new Vector3();
+const lineEndVector = new Vector3();
 
 export default function Camera() {
   const { debugOn } = useControls("Debug", { debugOn: false });
@@ -121,11 +129,3 @@ export default function Camera() {
     </>
   );
 }
-
-type Line2Props = Object3DNode<Line2, typeof Line2> & {
-  setPoints: (
-    start: Vector3 | [number, number, number],
-    end: Vector3 | [number, number, number],
-    mid: Vector3 | [number, number, number]
-  ) => void;
-};

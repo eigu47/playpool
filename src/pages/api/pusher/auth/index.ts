@@ -5,6 +5,27 @@ import { getInitialPositions } from "@/constants/BALLS";
 import { pusher } from "@/pages/api/pusher";
 import type { PlayerBallType } from "@/utils/multiplayerStore";
 
+type Users = { users: { id: string }[] };
+export type Member = {
+  id: string;
+  info: {
+    username: string;
+  };
+};
+export type CacheChannelInfo = {
+  occupied: boolean;
+  cache?: {
+    data?: GameData;
+    ttl?: number;
+  };
+};
+export type GameData = {
+  players:
+    | { id: string; connected: boolean; ballType: PlayerBallType }[]
+    | null;
+  positions: Vector3[] | null;
+};
+
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
@@ -60,29 +81,3 @@ export default async function handler(
     console.error(e);
   }
 }
-
-type Users = {
-  users: { id: string }[];
-};
-
-export type CacheChannelInfo = {
-  occupied: boolean;
-  cache?: {
-    data?: GameData;
-    ttl?: number;
-  };
-};
-
-export type GameData = {
-  players:
-    | { id: string; connected: boolean; ballType: PlayerBallType }[]
-    | null;
-  positions: Vector3[] | null;
-};
-
-export type Member = {
-  id: string;
-  info: {
-    username: string;
-  };
-};

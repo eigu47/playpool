@@ -10,6 +10,10 @@ import { useGameStore } from "@/utils/gameStore";
 const Scene = dynamic(() => import("@/components/canvas/Scene"), {
   ssr: false,
 });
+// const DummyScene = dynamic(() => import("@/components/canvas/DummyScene"), {
+//   ssr: false,
+// });
+
 const SHOW_BALLS = BALLS.filter((ball) => ball.id !== 0);
 
 const Home: NextPage = () => {
@@ -18,6 +22,7 @@ const Home: NextPage = () => {
   return (
     <>
       <Scene handleEndTurn={() => setGameMode("shot")} />
+      {/* <DummyScene /> */}
       <GUI>
         <IndexGUI />
         <div className="fixed top-0 left-0 m-3 flex">

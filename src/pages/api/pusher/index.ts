@@ -4,6 +4,12 @@ import type { Vector3 } from "three";
 
 import { env } from "@/env.mjs";
 
+export type ShotInfo = {
+  userId: string;
+  forceVector?: Vector3;
+  positions?: Vector3[];
+};
+
 export const pusher = new Pusher({
   appId: env.PUSHER_app_id,
   key: env.PUSHER_key,
@@ -38,9 +44,3 @@ export default async function handler(
     console.error(e);
   }
 }
-
-export type ShotInfo = {
-  userId: string;
-  forceVector?: Vector3;
-  positions?: Vector3[];
-};

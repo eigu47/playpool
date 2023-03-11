@@ -31,7 +31,6 @@ export default function Scene({
   return (
     <>
       <Canvas
-        camera={{ position: [0, 0, 5] }}
         onMouseDown={() => setResetCamera(false)}
         onTouchStart={() => setResetCamera(false)}
         // hidden={!hideDummyScene}
@@ -50,8 +49,8 @@ export default function Scene({
               handleWakeBall={handleWakeBall}
               handleEndShot={handleEndShot}
             />
-            <Debugs />
             {children}
+            <Debugs />
           </Physics>
         </Suspense>
         <Preload all />

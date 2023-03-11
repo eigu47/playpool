@@ -23,7 +23,7 @@ type Props = {
 };
 
 export default function Ball({
-  ball: { id: ballId },
+  ball: { id },
   ballGeometry,
   position,
   bind,
@@ -32,17 +32,17 @@ export default function Ball({
   handleEndTurn,
   handleWakeBall,
 }: Props) {
-  const ballTexture = useTexture(`/balls/${ballId}.jpg`);
+  const ballTexture = useTexture(`/balls/${id}.jpg`);
   const setGameMode = useGameStore((state) => state.setGameMode);
   const setSelectedBall = useBallsStore((state) => state.setSelectedBall);
   const addBody = useBallsStore((state) => state.addBody);
 
   return (
     <RigidBody
-      ref={(ref) => addBody(ref, ballId)}
-      userData={{ id: ballId, status: "play" }}
-      name={ballId.toString()}
-      key={ballId}
+      ref={(ref) => addBody(ref, id)}
+      userData={{ id, status: "play" }}
+      name={id.toString()}
+      key={id}
       colliders="ball"
       friction={PHYSIC_CONSTANTS.BALL_FRICTION}
       restitution={PHYSIC_CONSTANTS.BALL_RESTITUTION}
@@ -59,8 +59,7 @@ export default function Ball({
           useBallsStore
             .getState()
             .ballsBody.every(
-              (ball) =>
-                ball?.isSleeping() === true || ball?.userData.status !== "play"
+              (ball) => ball?.isSleeping() || ball?.userData.status !== "play"
             )
         ) {
           setGameMode("idle");
@@ -69,18 +68,18 @@ export default function Ball({
       }}
       onWake={() => {
         if (
-          useBallsStore.getState().ballsBody[ballId]?.userData.status === "play"
+          useBallsStore.getState().ballsBody[id]?.userData.status === "play"
         ) {
           setGameMode("moving");
-          handleWakeBall && handleWakeBall(ballId);
+          handleWakeBall && handleWakeBall(id);
         }
       }}
     >
       <mesh
-        name={ballId.toString()}
+        name={id.toString()}
         geometry={ballGeometry}
         {...(bind && (bind() as Mesh))}
-        onClick={() => setSelectedBall(ballId, true)}
+        onClick={() => setSelectedBall(id, true)}
         onPointerEnter={onPointerEnter}
         onPointerLeave={onPointerLeave}
       >

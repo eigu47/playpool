@@ -24,7 +24,7 @@ export default function IndexGUI() {
 
   return (
     <>
-      <Modal show={cueBallStatus !== "play"}>
+      <Modal show={cueBallStatus && cueBallStatus !== "play"}>
         <Button
           onClick={() => {
             resetPositions();

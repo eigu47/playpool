@@ -81,10 +81,12 @@ export default function Channel({ username }: Props) {
           }
         });
 
-        setTurn(0);
-        resetPositions(positions);
-        setGameMode("idle", true);
-        setResetCamera(true);
+        if (useMultiplayerStore.getState().playersInfo.length === 2) {
+          setTurn(0);
+          resetPositions(positions);
+          setGameMode("idle", true);
+          setResetCamera(true);
+        }
       }
     });
 

@@ -3,6 +3,19 @@ import { create } from "zustand";
 
 import type { BallId, RigidBodyData } from "@/utils/ballsStore";
 
+type UserInfo = {
+  id?: string;
+  username: string;
+  isPlaying: boolean;
+};
+export type PlayerInfo = {
+  id: string;
+  username: string;
+  connected: boolean;
+  ballType: PlayerBallType;
+};
+export type PlayerBallType = "stripe" | "solid" | null;
+
 type MultiplayerStore = {
   userInfo: UserInfo | null;
   playersInfo: PlayerInfo[];
@@ -100,17 +113,3 @@ export const useMultiplayerStore = create<MultiplayerStore>((set, get) => ({
     });
   },
 }));
-
-type UserInfo = {
-  id?: string;
-  username: string;
-  isPlaying: boolean;
-};
-
-export type PlayerBallType = "stripe" | "solid" | null;
-export type PlayerInfo = {
-  id: string;
-  username: string;
-  connected: boolean;
-  ballType: PlayerBallType;
-};

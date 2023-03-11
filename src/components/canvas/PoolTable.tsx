@@ -15,6 +15,18 @@ import { PHYSIC_CONSTANTS } from "@/constants/PHYSICS";
 import type { BallId } from "@/utils/ballsStore";
 import { useBallsStore } from "@/utils/ballsStore";
 
+type GLTFResult = GLTF & {
+  nodes: {
+    Object_2: THREE.Mesh;
+    Object_2001: THREE.Mesh;
+    Object_2002: THREE.Mesh;
+    Object_2003: THREE.Mesh;
+  };
+  materials: {
+    None: THREE.MeshStandardMaterial;
+  };
+};
+
 export default function Model(props: JSX.IntrinsicElements["group"]) {
   const { nodes, materials } = useGLTF(
     "/pool_table.glb"
@@ -26,7 +38,7 @@ export default function Model(props: JSX.IntrinsicElements["group"]) {
 
   return (
     <>
-      <Center getObjectsByProperty={undefined} position-y={-0.5} {...props}>
+      <Center position-y={-0.5} {...props}>
         <RigidBody
           type="fixed"
           colliders="trimesh"
@@ -70,7 +82,6 @@ export default function Model(props: JSX.IntrinsicElements["group"]) {
           setBallStatus("out", ballId as BallId);
         }}
       />
-
       {/* <mesh
         rotation={[-Math.PI / 2, 0, -Math.PI / 2]}
         dispose={null}
@@ -84,15 +95,3 @@ export default function Model(props: JSX.IntrinsicElements["group"]) {
 }
 
 useGLTF.preload("/pool_table.glb");
-
-type GLTFResult = GLTF & {
-  nodes: {
-    Object_2: THREE.Mesh;
-    Object_2001: THREE.Mesh;
-    Object_2002: THREE.Mesh;
-    Object_2003: THREE.Mesh;
-  };
-  materials: {
-    None: THREE.MeshStandardMaterial;
-  };
-};
