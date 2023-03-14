@@ -8,11 +8,14 @@ import { BALLS } from "@/constants/BALLS";
 import { useBallsStore } from "@/utils/ballsStore";
 import { useGameStore } from "@/utils/gameStore";
 
-const SHOW_BALLS = BALLS.filter((ball) => ball.id !== 0);
+const SHOW_BALLS = [
+  ...BALLS.filter(({ id }) => id !== 0 && id !== 8),
+  BALLS[8],
+];
 
 export default function IndexGUI() {
-  const cueBallStatus = useBallsStore(
-    (state) => state.ballsBody[0]?.userData?.status
+  const ballStatus = useBallsStore((state) =>
+    state.ballsBody.flatMap((ball) => ball.userData?.status)
   );
   const gameMode = useGameStore((state) => state.gameMode);
   const setGameMode = useGameStore((state) => state.setGameMode);
@@ -22,16 +25,25 @@ export default function IndexGUI() {
 
   const [showInput, setShowInput] = useState(false);
 
+  console.log(ballStatus.slice(1));
+
   return (
     <>
-      <Modal show={cueBallStatus && cueBallStatus !== "play"}>
-        <Button
-          onClick={() => {
-            resetPositions();
-            setSelectedBall(0);
-          }}
-          text="START AGAIN"
-        />
+      <Modal show={ballStatus[0] !== "play" || ballStatus[8] != "play"}>
+        <div className="flex flex-col gap-8 text-3xl text-white/70 font-semibold">
+          <p className="text-center ">
+            {ballStatus.slice(1).every((status) => status === "pocket")
+              ? "You WIN!"
+              : "You LOSE!"}
+          </p>
+          <Button
+            onClick={() => {
+              resetPositions();
+              setSelectedBall(0);
+            }}
+            text="START AGAIN"
+          />
+        </div>
       </Modal>
 
       <Modal show={gameMode === "menu"}>

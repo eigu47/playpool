@@ -13,7 +13,7 @@ type Props = {
 
 export default function Score({ balls, text, show = false }: Props) {
   const ballsStatus = useBallsStore((state) =>
-    state.ballsBody.flatMap((body) => body?.userData?.status)
+    state.ballsBody.flatMap((body) => body.userData?.status)
   );
   const gameMode = useGameStore((state) => state.gameMode);
 

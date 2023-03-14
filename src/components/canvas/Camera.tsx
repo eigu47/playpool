@@ -78,9 +78,9 @@ export default function Camera() {
           lineEndVector.lerp(
             cameraCenter
               .clone()
-              .add(lineVector.clone().multiplyScalar(2))
+              .add(lineVector.clone().multiplyScalar(2.5))
               .setY(cameraCenter.y),
-            delta * 30
+            delta * 40
           ),
           cameraCenter
         );
