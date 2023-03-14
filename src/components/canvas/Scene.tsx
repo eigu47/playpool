@@ -10,7 +10,6 @@ import Camera from "@/components/canvas/Camera";
 import Debugs from "@/components/canvas/Debugs";
 import PoolTable from "@/components/canvas/PoolTable";
 import { useGameStore } from "@/utils/gameStore";
-import { useMultiplayerStore } from "@/utils/multiplayerStore";
 
 type Props = {
   children?: React.ReactNode;
@@ -26,23 +25,21 @@ export default function Scene({
   handleEndShot,
 }: Props) {
   const setResetCamera = useGameStore((state) => state.setResetCamera);
-  // const hideDummyScene = useMultiplayerStore((state) => state.hideDummyScene);
 
   return (
     <>
       <Canvas
         onMouseDown={() => setResetCamera(false)}
         onTouchStart={() => setResetCamera(false)}
-        // hidden={!hideDummyScene}
-        // frameloop="demand"
+        frameloop="demand"
       >
-        <ambientLight />
-        <pointLight position={[10, 10, 10]} intensity={0.1} />
+        <ambientLight intensity={0.2} />
+        <directionalLight position={[5, 5, 5]} intensity={0.5} />
         <color args={["hsl(210, 50%, 20%)"]} attach="background" />
 
         <Camera />
         <Suspense>
-          <Physics>
+          <Physics updateLoop="independent">
             <PoolTable />
             <Balls
               handleEndTurn={handleEndTurn}

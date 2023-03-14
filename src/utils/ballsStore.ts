@@ -2,8 +2,7 @@ import { type RapierRigidBody, vec3 } from "@react-three/rapier";
 import { Vector3 } from "three";
 import { create } from "zustand";
 
-import type { BALLS } from "@/constants/BALLS";
-import { getInitialPositions } from "@/constants/BALLS";
+import { getInitialPositions, type BALLS } from "@/constants/BALLS";
 import { useGameStore } from "@/utils/gameStore";
 import { useMultiplayerStore } from "@/utils/multiplayerStore";
 
@@ -19,7 +18,7 @@ type BallsStore = {
   selectedBall: RigidBodyData | null;
   ballsBody: RigidBodyData[];
   setSelectedBall: (id: BallId | null, focus?: boolean) => void;
-  addBody: (body: RapierRigidBody | null, id: BallId) => void;
+  addBallBody: (body: RapierRigidBody | null, id: BallId) => void;
   setBallStatus: (status: BallStatus, id: BallId, force?: boolean) => void;
   resetPositions: (positions?: Vector3[]) => void;
   getBallsPositions: () => Vector3[];
@@ -51,7 +50,7 @@ export const useBallsStore = create<BallsStore>((set, get) => ({
       useGameStore.getState().setGameMode("idle");
   },
 
-  addBody(body, id) {
+  addBallBody(body, id) {
     if (body == null) return;
 
     set((state) => {

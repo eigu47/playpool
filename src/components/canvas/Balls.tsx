@@ -5,12 +5,13 @@ import { SphereGeometry, Vector3 } from "three";
 
 import Ball from "@/components/canvas/Ball";
 import { BALLS, getInitialPositions } from "@/constants/BALLS";
+import { PHYSIC_CONSTANTS } from "@/constants/PHYSICS";
 import { useBallsStore } from "@/utils/ballsStore";
 import { useGameStore } from "@/utils/gameStore";
 import { useMultiplayerStore } from "@/utils/multiplayerStore";
 
 const COLOR_BALLS = BALLS.filter(({ id }) => id !== 0);
-const ballGeometry = new SphereGeometry(0.026, 16, 16);
+const ballGeometry = new SphereGeometry(PHYSIC_CONSTANTS.BALL_RADIUS);
 const forceVector = new Vector3();
 const positions = getInitialPositions();
 
@@ -35,12 +36,14 @@ export default function Balls({
       last &&
       movement[1] > 0
     ) {
-      const force = Math.min(movement[1] / window.innerHeight, 0.5) / 1500;
+      const force = Math.min(movement[1] / window.innerHeight, 0.5) / 80;
 
       forceVector
         .copy(useGameStore.getState().shotNormal ?? new Vector3())
         .multiplyScalar(force)
         .setY(0);
+
+      console.log("forceVector", forceVector);
 
       handleEndShot && handleEndShot(forceVector);
       useBallsStore.getState().ballsBody[0]?.applyImpulse(forceVector, true);

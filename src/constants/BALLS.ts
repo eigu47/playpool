@@ -1,34 +1,32 @@
 import { Vector3 } from "three";
 
 const FIXED_POS = [
-  [0, 0.033, 0.55], // 0
-  [0, 0.033, -0.64], // 8
+  [0, 0.052, 1.15], // 0
+  [0, 0.052, -1.33], // 8
 ] as const;
 
 const RANDOM_POS = [
   // 0
-  [0, 0.033, -0.55],
-  [0.026, 0.033, -0.595],
-  [-0.026, 0.033, -0.595],
-  [0.052, 0.033, -0.64],
-  [-0.052, 0.033, -0.64],
-  [0.026, 0.033, -0.685],
-  [-0.026, 0.033, -0.685],
+  [0, 0.052, -1.15],
+  [0.052, 0.052, -1.24],
+  [-0.052, 0.052, -1.24],
+  [0.104, 0.052, -1.33],
+  [-0.104, 0.052, -1.33],
+  [0.052, 0.052, -1.42],
+  [-0.052, 0.052, -1.42],
   // 8
-  [0.078, 0.033, -0.685],
-  [-0.078, 0.033, -0.685],
-  [0, 0.033, -0.73],
-  [0.052, 0.033, -0.73],
-  [-0.052, 0.033, -0.73],
-  [0.104, 0.033, -0.73],
-  [-0.104, 0.033, -0.73],
+  [0.156, 0.052, -1.42],
+  [-0.156, 0.052, -1.42],
+  [0, 0.052, -1.51],
+  [0.104, 0.052, -1.51],
+  [-0.104, 0.052, -1.51],
+  [0.208, 0.052, -1.51],
+  [-0.208, 0.052, -1.51],
 ] as const;
 
 export function shuffleArray<T>(indexes: T[]): T[] {
   for (let i = indexes.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
-
-    // [indexes[i], indexes[j]] = [indexes[j]!, indexes[i]!];
 
     const [ii, jj] = [indexes[i], indexes[j]];
     if (ii != undefined && jj != undefined) {
@@ -39,8 +37,7 @@ export function shuffleArray<T>(indexes: T[]): T[] {
 }
 
 export function getInitialPositions(): Vector3[] {
-  const copyPos = [...RANDOM_POS];
-  const shuffled = shuffleArray(copyPos);
+  const shuffled = shuffleArray([...RANDOM_POS]);
 
   return [
     FIXED_POS[0],

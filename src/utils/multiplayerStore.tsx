@@ -1,7 +1,4 @@
-import type { RapierRigidBody } from "@react-three/rapier";
 import { create } from "zustand";
-
-import type { BallId, RigidBodyData } from "@/utils/ballsStore";
 
 type UserInfo = {
   id?: string;
@@ -20,8 +17,6 @@ type MultiplayerStore = {
   userInfo: UserInfo | null;
   playersInfo: PlayerInfo[];
   playerTurn: 0 | 1 | null;
-  hideDummyScene: boolean;
-  dummyBalls: RigidBodyData[];
   setUserInfo: ({ id, username, isPlaying }: Partial<UserInfo>) => void;
   addPlayer: (id: string, username: string) => void;
   setTurn: (playerOrSwap: 0 | 1 | "swap") => void;
@@ -30,15 +25,12 @@ type MultiplayerStore = {
     id: string,
     ballTypeOrConnection: PlayerBallType | boolean
   ) => void;
-  addDummyBall: (body: RapierRigidBody | null, id: BallId) => void;
 };
 
 export const useMultiplayerStore = create<MultiplayerStore>((set, get) => ({
   userInfo: null,
   playersInfo: [],
   playerTurn: null,
-  hideDummyScene: true,
-  dummyBalls: [],
 
   setUserInfo({
     id = get().userInfo?.id,
@@ -101,15 +93,5 @@ export const useMultiplayerStore = create<MultiplayerStore>((set, get) => ({
           : player
       ),
     }));
-  },
-
-  addDummyBall(body, id) {
-    if (body == null) return;
-
-    set((state) => {
-      const dummyBalls = [...state.dummyBalls];
-      dummyBalls[id] = body as RigidBodyData;
-      return { dummyBalls };
-    });
   },
 }));

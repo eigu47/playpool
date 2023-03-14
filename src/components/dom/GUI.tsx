@@ -7,7 +7,6 @@ import { useRouter } from "next/router";
 import Button from "@/components/dom/Button";
 import { useBallsStore } from "@/utils/ballsStore";
 import { useGameStore } from "@/utils/gameStore";
-import { useMultiplayerStore } from "@/utils/multiplayerStore";
 
 type Props = {
   children: React.ReactNode;
@@ -43,25 +42,11 @@ export default function GUI({ children }: Props) {
       <Leva hidden={!debugMode} />
       {debugMode && (
         <div className="fixed bottom-0 left-0 m-3 text-center text-white">
-          <p
-            onClick={() => {
-              // useBallsStore.getState().ballsState[0]?.body?.applyImpulse({
-              //   x: 0.00000843215486675366,
-              //   y: 0,
-              //   z: -0.00026817707080990045,
-              // });
-            }}
-          >
-            {gameMode}
-          </p>
+          <p>{gameMode}</p>
           <Button
             onClick={() => {
-              // resetPositions();
-              // setSelectedBall(0);
-              // console.log(useBallsStore.getState().getBallsPositions());
-              // useMultiplayerStore.setState({
-              //   hideDummyScene: !useMultiplayerStore.getState().hideDummyScene,
-              // });
+              resetPositions();
+              setSelectedBall(0);
             }}
             text="RESET"
           />

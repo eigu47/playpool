@@ -4,7 +4,7 @@ import { useTexture } from "@react-three/drei";
 import { RigidBody } from "@react-three/rapier";
 import type { ReactDOMAttributes } from "@use-gesture/react/dist/declarations/src/types";
 import type { Vector3 } from "three";
-import { type SphereGeometry, type Mesh } from "three";
+import type { SphereGeometry, Mesh } from "three";
 
 import type { BALLS } from "@/constants/BALLS";
 import { PHYSIC_CONSTANTS } from "@/constants/PHYSICS";
@@ -35,18 +35,18 @@ export default function Ball({
   const ballTexture = useTexture(`/balls/${id}.jpg`);
   const setGameMode = useGameStore((state) => state.setGameMode);
   const setSelectedBall = useBallsStore((state) => state.setSelectedBall);
-  const addBody = useBallsStore((state) => state.addBody);
+  const addBody = useBallsStore((state) => state.addBallBody);
 
   return (
     <RigidBody
       ref={(ref) => addBody(ref, id)}
       userData={{ id, status: "play" }}
-      name={id.toString()}
-      key={id}
+      name={`body-${id}`}
       colliders="ball"
       friction={PHYSIC_CONSTANTS.BALL_FRICTION}
       restitution={PHYSIC_CONSTANTS.BALL_RESTITUTION}
-      angularDamping={PHYSIC_CONSTANTS.DAMPING}
+      linearDamping={PHYSIC_CONSTANTS.LINEAR_DAMPING}
+      angularDamping={PHYSIC_CONSTANTS.ANGULAR_DAMPING}
       position={position}
       rotation={[
         Math.PI * Math.random() * 2,
@@ -76,7 +76,7 @@ export default function Ball({
       }}
     >
       <mesh
-        name={id.toString()}
+        name={`mesh-${id}`}
         geometry={ballGeometry}
         {...(bind && (bind() as Mesh))}
         onClick={() => setSelectedBall(id, true)}

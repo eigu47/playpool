@@ -10,7 +10,7 @@ import { useGameStore } from "@/utils/gameStore";
 const Scene = dynamic(() => import("@/components/canvas/Scene"), {
   ssr: false,
 });
-// const DummyScene = dynamic(() => import("@/components/canvas/DummyScene"), {
+// const TestScene = dynamic(() => import("@/components/canvas/TestScene"), {
 //   ssr: false,
 // });
 
@@ -22,7 +22,7 @@ const Home: NextPage = () => {
   return (
     <>
       <Scene handleEndTurn={() => setGameMode("shot")} />
-      {/* <DummyScene /> */}
+      {/* <TestScene /> */}
       <GUI>
         <IndexGUI />
         <div className="fixed top-0 left-0 m-3 flex">
