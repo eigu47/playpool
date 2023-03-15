@@ -29,7 +29,11 @@ export default function IndexGUI() {
 
   return (
     <>
-      <Modal show={ballStatus[0] !== "play" || ballStatus[8] != "play"}>
+      <Modal
+        show={
+          ballStatus[0] && (ballStatus[0] !== "play" || ballStatus[8] != "play")
+        }
+      >
         <div className="flex flex-col gap-8 text-3xl text-white/70 font-semibold">
           <p className="text-center ">
             {ballStatus.slice(1).every((status) => status === "pocket")
